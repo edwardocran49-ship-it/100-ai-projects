@@ -1,0 +1,1 @@
+pip install librosa scikit-learn numpy torch matplotlib

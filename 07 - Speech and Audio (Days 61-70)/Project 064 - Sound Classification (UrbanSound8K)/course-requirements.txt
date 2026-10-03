@@ -1,0 +1,1 @@
+pip install librosa pandas numpy matplotlib torch torchaudio scikit-learn

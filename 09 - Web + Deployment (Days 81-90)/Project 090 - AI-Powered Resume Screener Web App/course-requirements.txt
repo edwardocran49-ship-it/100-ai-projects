@@ -1,0 +1,1 @@
+pip install streamlit PyMuPDF sentence-transformers scikit-learn

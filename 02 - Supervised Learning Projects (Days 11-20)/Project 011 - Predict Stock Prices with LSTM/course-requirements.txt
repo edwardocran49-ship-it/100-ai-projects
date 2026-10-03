@@ -1,0 +1,1 @@
+pip install pandas yfinance scikit-learn matplotlib tensorflow
