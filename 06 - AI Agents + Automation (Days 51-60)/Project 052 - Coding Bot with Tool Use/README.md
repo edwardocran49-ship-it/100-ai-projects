@@ -11,7 +11,7 @@ Generate, execute, test, and repair a small Python function.
 
 - `main.py` — runnable implementation of the course workflow.
 - `test_project.py` — project-specific behavior checks.
-- `ANALYSIS_REPORT.md` — reviewed findings with two rendered charts.
+- `ANALYSIS_REPORT.md` — technical evaluation with two rendered figures.
 - `analysis_assets/` — report figures generated from the validated run.
 
 ## Run
@@ -27,3 +27,7 @@ python -m unittest -v test_project.py
 The checked demonstration passes its behavioral tests. See [the analysis report](ANALYSIS_REPORT.md) for the observed metrics, interpretation, and limitations.
 
 The course PDF is not redistributed in this public repository.
+
+## Inputs
+
+See [INPUTS.md](INPUTS.md) for the input type, evaluation fixtures, and privacy boundary.

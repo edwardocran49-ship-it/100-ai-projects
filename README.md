@@ -1,21 +1,23 @@
 # 100 AI Projects
 
-
 > The licensed course PDFs are not included in this public repository. Each implementation and test is original portfolio code.
+
 **Author:** Edward Ocran
 
 A 100-project AI learning portfolio organized into ten course-aligned sections. Each project contains a runnable implementation, setup guidance, and an automated smoke test. Dataset-backed projects use the named source from the course wherever it is available; projects based on APIs, pretrained models, user-supplied files, or an explicitly simulated exercise identify that input honestly.
 
-## Dataset policy
+## Evidence and documentation policy
 
 - Small redistributable datasets are stored beside their projects in `data/`.
 - Large or access-controlled datasets use a reproducible downloader and remain outside Git.
-- Every upgraded data project includes `DATASET.md` with its source, local path, size, retrieval date, and licensing/provenance note.
-- Each upgraded data project includes `ANALYSIS_REPORT.md` with an executive summary, measured results, two evidence charts, analytical interpretation, limitations, and recommendations.
-- Projects 1–40 currently use the expanded report format. Their 80 PNG charts render directly on GitHub. Projects 1–30 can be rebuilt with `python tools/build_analysis_reports.py`; Projects 31–40 use `python tools/build_nlp_charts.py`.
+- `DATASET.md` is reserved for datasets and recorded corpora; `INPUTS.md` documents source documents, webpages, prompts, fixtures, and deployment inputs.
+- Every project includes `ANALYSIS_REPORT.md` as a stable portfolio entry point. Its title identifies the correct report type: data analysis, technical evaluation, deployment validation, safety evaluation, simulation evaluation, or reflection review.
+- The [project verification matrix](PROJECT_VERIFICATION.md) records the evidence type and current validation level for every project.
+- The [dataset execution audit](DATASET_AUDIT.md) records full-run evidence for every dataset-backed project.
+- [Portfolio standards](PORTFOLIO_STANDARDS.md) define what smoke, source-backed, full, and environment-dependent validation mean.
 - The course PDFs are not redistributed.
 
-## Validate everything
+## Smoke validation
 
 Use Python 3.11 or 3.12. These versions support the TensorFlow projects in the portfolio.
 
@@ -23,6 +25,18 @@ Use Python 3.11 or 3.12. These versions support the TensorFlow projects in the p
 python -m pip install -r requirements.txt
 python validate_all.py
 ```
+
+This dependency-light check exercises all 100 entry points. It confirms interface and core behavior, but it does not claim that every external service, large model, hardware device, microphone, or full dataset was rerun in GitHub Actions.
+
+## Full selected-project validation
+
+After following each project's setup and input-retrieval instructions, run full entry points for a selected range without the CI fast path:
+
+```powershell
+python validate_full.py --from-project 91 --to-project 100
+```
+
+Install the dependencies listed inside the selected projects before running this command. Environment-dependent projects still require checks on their target service, hardware, browser, microphone, or container runtime.
 
 ## Project index
 

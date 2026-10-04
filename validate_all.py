@@ -37,7 +37,12 @@ def main() -> int:
             payload = {}
         if completed.returncode or payload.get("status") != "ok":
             failures.append({"project": str(main_file.parent), "stderr": completed.stderr[-500:]})
-    report = {"projects_found": len(mains), "passed": len(mains) - len(failures), "failed": failures}
+    report = {
+        "validation_level": "dependency-light smoke validation",
+        "projects_found": len(mains),
+        "passed": len(mains) - len(failures),
+        "failed": failures,
+    }
     (root / "validation-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
     return 1 if failures or len(mains) != 100 else 0

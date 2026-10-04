@@ -1,4 +1,4 @@
-# Analysis Report: Ethics-Aware AI Chatbot (Rule-Constrained)
+# Safety Evaluation: Ethics-Aware AI Chatbot (Rule-Constrained)
 
 **Author:** Edward Ocran
 

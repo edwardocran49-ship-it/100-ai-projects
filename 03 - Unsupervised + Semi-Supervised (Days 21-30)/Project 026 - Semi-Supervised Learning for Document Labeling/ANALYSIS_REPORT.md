@@ -51,5 +51,5 @@ No unlabeled review crossed the initial 0.90 probability threshold, so the imple
 
 - Run `python main.py --json` from this project folder to reproduce the headline metrics.
 - Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
-- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- The committed figures correspond to the measured results documented in this report.
 - Charts are stored as regular PNG files so they render directly in GitHub Markdown.

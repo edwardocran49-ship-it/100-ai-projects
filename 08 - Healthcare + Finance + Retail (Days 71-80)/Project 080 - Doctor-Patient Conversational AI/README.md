@@ -11,7 +11,7 @@ Implement the course workflow for doctor-patient conversational ai with inspecta
 - `main.py` — runnable implementation.
 - `test_project.py` — behavior test.
 - `ANALYSIS_REPORT.md` — detailed findings and charts.
-- `DATASET.md` — provenance and handling.
+- `INPUTS.md` — provenance and handling.
 - `analysis_assets/` — rendered report figures.
 
 ## Run

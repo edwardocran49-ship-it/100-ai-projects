@@ -1,4 +1,4 @@
-# Analysis Report: AGI Alignment Simulator (Multi-Agent Goal Drift)
+# Simulation Evaluation: AGI Alignment Simulator (Multi-Agent Goal Drift)
 
 **Author:** Edward Ocran
 

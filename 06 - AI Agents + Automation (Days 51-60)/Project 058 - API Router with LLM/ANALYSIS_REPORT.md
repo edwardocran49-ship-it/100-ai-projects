@@ -1,4 +1,4 @@
-# Analysis Report: API Router with LLM
+# Technical Evaluation: API Router with LLM
 
 **Author:** Edward Ocran  
 **Project:** 58  
@@ -31,4 +31,4 @@ python main.py
 python -m unittest -v test_project.py
 ```
 
-The implementation and test output are the primary evidence. External source details, where used, are documented in `DATASET.md`.
+The implementation and test output are the primary evidence. External source details, where used, are documented in `INPUTS.md`.

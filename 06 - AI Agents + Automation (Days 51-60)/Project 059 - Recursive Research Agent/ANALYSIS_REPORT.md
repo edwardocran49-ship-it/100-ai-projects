@@ -1,4 +1,4 @@
-# Analysis Report: Recursive Research Agent
+# Technical Evaluation: Recursive Research Agent
 
 **Author:** Edward Ocran  
 **Project:** 59  
@@ -31,4 +31,4 @@ python main.py
 python -m unittest -v test_project.py
 ```
 
-The implementation and test output are the primary evidence. External source details, where used, are documented in `DATASET.md`.
+The implementation and test output are the primary evidence. External source details, where used, are documented in `INPUTS.md`.

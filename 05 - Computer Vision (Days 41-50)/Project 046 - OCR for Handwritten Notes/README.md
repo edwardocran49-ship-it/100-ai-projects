@@ -15,3 +15,7 @@ python -m unittest -v test_project.py
 
 Data notes: [INPUT.md](INPUT.md)  
 Findings: [Analysis report](ANALYSIS_REPORT.md)
+
+## Inputs
+
+See [INPUTS.md](INPUTS.md) for the input type, evaluation fixtures, and privacy boundary.

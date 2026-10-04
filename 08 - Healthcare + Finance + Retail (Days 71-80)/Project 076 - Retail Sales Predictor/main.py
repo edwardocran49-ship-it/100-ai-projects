@@ -9,7 +9,8 @@ def model(path):
  return {"days":len(series),"holdout_mae":round(mae,2),"next_30_units":round(float(future.sum()),1),"daily_average":round(float(future.mean()),2)}
 def run_demo(fast=None,data=None):
  if os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" or fast:return {"project":76,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","metrics":{"days":120,"holdout_mae":8.2,"next_30_units":6200}}
- if data is None:raise ValueError("Run download_data.py and pass --data")
+ data=data or Path(__file__).parent/"data"/"daily_sales.csv"
+ if not data.exists():raise FileNotFoundError("Run download_data.py first or provide --data")
  return {"project":76,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","metrics":model(data)}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--data",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(data=a.data),indent=None if a.json else 2))

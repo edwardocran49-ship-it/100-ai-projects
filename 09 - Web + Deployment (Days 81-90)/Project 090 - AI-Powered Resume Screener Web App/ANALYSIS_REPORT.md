@@ -1,4 +1,4 @@
-# Analysis Report: AI-Powered Resume Screener Web App
+# Deployment Validation: AI-Powered Resume Screener Web App
 
 **Author:** Edward Ocran
 

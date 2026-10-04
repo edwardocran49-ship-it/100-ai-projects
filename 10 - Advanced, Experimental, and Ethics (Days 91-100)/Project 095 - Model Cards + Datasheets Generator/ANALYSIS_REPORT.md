@@ -1,4 +1,4 @@
-# Analysis Report: Model Cards + Datasheets Generator
+# Governance Artifact Evaluation: Model Cards + Datasheets Generator
 
 **Author:** Edward Ocran
 

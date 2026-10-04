@@ -14,3 +14,7 @@ python -m unittest -v test_project.py
 
 The first normal run downloads `yolov8n.pt`.  
 Findings and detection evidence: [Analysis report](ANALYSIS_REPORT.md)
+
+## Inputs
+
+See [INPUTS.md](INPUTS.md) for the input type, evaluation fixtures, and privacy boundary.

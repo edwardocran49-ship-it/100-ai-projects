@@ -1,4 +1,4 @@
-# Analysis Report: Build a Local AGI Agent with Memory + Tools
+# Technical Evaluation: Build a Local AGI Agent with Memory + Tools
 
 **Author:** Edward Ocran
 

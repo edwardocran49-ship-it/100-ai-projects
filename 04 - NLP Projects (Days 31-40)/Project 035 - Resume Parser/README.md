@@ -18,7 +18,7 @@ Included fictional sample resume; accepts user TXT/PDF files. The default execut
 - `requirements.txt` — runtime dependencies
 - `ANALYSIS_REPORT.md` — measured findings with two rendered charts
 - `charts/` — report figures
-- `DATASET.md` and `data/sample_resume.txt` — documented sample input
+- `INPUTS.md` and `data/sample_resume.txt` — documented sample input
 
 ## Run
 

@@ -1,4 +1,4 @@
-# Analysis Report: Create a Hugging Face Space
+# Deployment Validation: Create a Hugging Face Space
 
 **Author:** Edward Ocran
 

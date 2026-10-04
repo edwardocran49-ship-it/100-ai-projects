@@ -11,9 +11,9 @@ Decompose a research question and synthesize evidence from focused retrieval bra
 
 - `main.py` — runnable implementation of the course workflow.
 - `test_project.py` — project-specific behavior checks.
-- `ANALYSIS_REPORT.md` — reviewed findings with two rendered charts.
+- `ANALYSIS_REPORT.md` — technical evaluation with two rendered figures.
 - `analysis_assets/` — report figures generated from the validated run.
-- `DATASET.md` — source and retrieval notes.
+- `INPUTS.md` — source and retrieval notes.
 
 ## Run
 

@@ -1,4 +1,4 @@
-# Analysis Report: Build Your Own LLM Evaluation Suite
+# Evaluation Suite Review: Build Your Own LLM Evaluation Suite
 
 **Author:** Edward Ocran
 

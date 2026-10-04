@@ -20,3 +20,7 @@ pip install -r requirements.txt
 python main.py --json
 python -m unittest -v test_project.py
 ```
+
+## Inputs
+
+See [INPUTS.md](INPUTS.md) for the input type, evaluation fixtures, and privacy boundary.

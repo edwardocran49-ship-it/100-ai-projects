@@ -14,3 +14,7 @@ python -m unittest -v test_project.py
 
 The first normal run downloads the BLIP processor and weights.  
 Findings and visual evidence: [Analysis report](ANALYSIS_REPORT.md)
+
+## Inputs
+
+See [INPUTS.md](INPUTS.md) for the input type, evaluation fixtures, and privacy boundary.

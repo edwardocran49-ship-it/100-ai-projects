@@ -13,7 +13,8 @@ def analyze(review,m,v):
  prob=float(m.predict_proba(v.transform([review]))[0,1]);aspects=[a for a,terms in ASPECTS.items() if any(t in review.lower() for t in terms)];return {"sentiment":"positive" if prob>=.5 else "negative","positive_probability":round(prob,4),"aspects":aspects}
 def run_demo(fast=None,data=None):
  if os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" or fast:return {"project":79,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","analysis":{"sentiment":"negative","aspects":["battery","display","performance","support"]},"metrics":{"rows":1000,"accuracy":.8,"aspects":4}}
- if data is None:raise ValueError("Run download_data.py and pass --data")
+ data=data or Path(__file__).parent/"data"/"amazon_cells_labelled.txt"
+ if not data.exists():raise FileNotFoundError("Run download_data.py first or provide --data")
  m,v,acc,rows=train(data);a=analyze("The battery life is terrible, but the display is crisp, performance is fast, and support was responsive.",m,v);return {"project":79,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","analysis":a,"metrics":{"rows":rows,"accuracy":acc,"aspects":len(a["aspects"])}}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--data",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(data=a.data),indent=None if a.json else 2))

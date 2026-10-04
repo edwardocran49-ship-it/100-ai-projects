@@ -20,7 +20,10 @@ def rank(smiles,records,fast=False):
  return sorted(out,key=lambda x:x["similarity"],reverse=True)
 def run_demo(fast=None,data=None):
  if fast is None:fast=os.environ.get("PORTFOLIO_FAST_VALIDATION")=="1"
- records=DEFAULT if data is None else {r["drug"]:r["smiles"] for r in csv.DictReader(open(data,encoding="utf-8"))};results=rank(DEFAULT["Acetaminophen"],records,fast)
+ if data is None:
+  local=Path(__file__).parent/"data"/"pubchem_drugs.csv"
+  data=local if local.exists() else None
+ records=DEFAULT if data is None else {r["drug"]:r["smiles"] for r in csv.DictReader(open(data,encoding="utf-8"))};results=rank(records["Acetaminophen"],records,fast)
  return {"project":73,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","query":"Acetaminophen","results":results,"metrics":{"compounds":len(records),"exact_match":results[0]["similarity"],"next_similarity":results[1]["similarity"]}}
 def main():
  p=argparse.ArgumentParser();p.add_argument("--data",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(data=a.data),indent=None if a.json else 2))

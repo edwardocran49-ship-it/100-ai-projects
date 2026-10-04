@@ -14,3 +14,7 @@ python -m unittest -v test_project.py
 
 Output: `outputs/super_resolved.png`  
 Findings: [Analysis report](ANALYSIS_REPORT.md)
+
+## Inputs
+
+See [INPUTS.md](INPUTS.md) for the input type, evaluation fixtures, and privacy boundary.

@@ -12,7 +12,7 @@ Synthesize approved text in a consented reference voice using Coqui YourTTS.
 - `main.py` — runnable implementation of the PDF workflow.
 - `test_project.py` — behavior-focused automated test.
 - `ANALYSIS_REPORT.md` — observed results, charts, and interpretation.
-- `DATASET.md` — audio source and handling notes.
+- `INPUTS.md` — audio source and handling notes.
 - `analysis_assets/` — rendered evidence used by the report.
 
 ## Run

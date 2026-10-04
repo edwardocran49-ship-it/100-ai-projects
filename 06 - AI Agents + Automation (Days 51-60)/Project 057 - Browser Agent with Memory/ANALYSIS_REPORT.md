@@ -1,4 +1,4 @@
-# Analysis Report: Browser Agent with Memory
+# Technical Evaluation: Browser Agent with Memory
 
 **Author:** Edward Ocran  
 **Project:** 57  
@@ -31,4 +31,4 @@ python main.py
 python -m unittest -v test_project.py
 ```
 
-The implementation and test output are the primary evidence. External source details, where used, are documented in `DATASET.md`.
+The implementation and test output are the primary evidence. External source details, where used, are documented in `INPUTS.md`.

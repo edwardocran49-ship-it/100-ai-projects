@@ -1,4 +1,5 @@
 {
+  "validation_level": "dependency-light smoke validation",
   "projects_found": 100,
   "passed": 100,
   "failed": []

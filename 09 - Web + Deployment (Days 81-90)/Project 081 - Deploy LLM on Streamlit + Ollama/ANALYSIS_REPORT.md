@@ -1,4 +1,4 @@
-# Analysis Report: Deploy LLM on Streamlit + Ollama
+# Deployment Validation: Deploy LLM on Streamlit + Ollama
 
 **Author:** Edward Ocran
 

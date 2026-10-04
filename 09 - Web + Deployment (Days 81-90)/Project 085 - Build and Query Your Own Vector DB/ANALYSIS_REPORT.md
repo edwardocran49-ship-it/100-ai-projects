@@ -1,4 +1,4 @@
-# Analysis Report: Build and Query Your Own Vector DB
+# Deployment Validation: Build and Query Your Own Vector DB
 
 **Author:** Edward Ocran
 

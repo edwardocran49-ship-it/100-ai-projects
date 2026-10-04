@@ -18,8 +18,10 @@ def run_demo(fast:bool|None=None,data:Path|None=None):
         for label,freq in (("yes",240),("stop",760)):
             for i in range(8):files.append(write_tone(d/f"{label}{i}.wav",freq+i*3));labels.append(label)
     else:
-        if data is None: raise ValueError("Provide --data with extracted Speech Commands")
+        data=data or Path(__file__).parent/"data"
+        if not data.exists(): raise FileNotFoundError("Run download_data.py first or provide --data with extracted Speech Commands")
         files,labels=load_commands(data)
+        if not files: raise ValueError(f"No Speech Commands WAV files found under {data}")
     result=classify_dataset(files,labels,68)
     return {"project":68,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","dataset":"Google Speech Commands v0.01","metrics":{k:v for k,v in result.items() if k not in {"model","truth","predictions","confusion_matrix"}},"confusion_matrix":result["confusion_matrix"]}
 def main():

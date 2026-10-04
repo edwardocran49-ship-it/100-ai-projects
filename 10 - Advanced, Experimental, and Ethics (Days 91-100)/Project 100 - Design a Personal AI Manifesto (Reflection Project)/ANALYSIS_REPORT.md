@@ -1,4 +1,4 @@
-# Analysis Report: Design a Personal AI Manifesto (Reflection Project)
+# Reflection Review: Design a Personal AI Manifesto (Reflection Project)
 
 **Author:** Edward Ocran
 

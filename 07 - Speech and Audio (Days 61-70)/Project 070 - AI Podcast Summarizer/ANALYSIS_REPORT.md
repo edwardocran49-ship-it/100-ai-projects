@@ -33,4 +33,4 @@ python main.py --help
 python -m unittest -v test_project.py
 ```
 
-See `DATASET.md` for source and handling details.
+See `INPUTS.md` for source and handling details.

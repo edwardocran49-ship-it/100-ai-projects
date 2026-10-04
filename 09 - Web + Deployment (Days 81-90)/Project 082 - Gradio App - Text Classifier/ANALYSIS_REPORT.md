@@ -1,4 +1,4 @@
-# Analysis Report: Gradio App - Text Classifier
+# Deployment Validation: Gradio App - Text Classifier
 
 **Author:** Edward Ocran
 

@@ -10,8 +10,9 @@ Implement and validate the course deployment workflow for create an ai cli tool.
 
 - `main.py` — testable application core.
 - `test_project.py` — automated behavior check.
-- `ANALYSIS_REPORT.md` — findings with two charts.
+- `ANALYSIS_REPORT.md` — deployment validation with two figures.
 - `analysis_assets/` — report figures.
+- `INPUTS.md` — fixtures, reference inputs, and privacy notes.
 
 ## Run
 

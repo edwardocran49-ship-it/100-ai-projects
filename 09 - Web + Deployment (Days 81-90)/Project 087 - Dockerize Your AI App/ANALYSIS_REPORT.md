@@ -1,4 +1,4 @@
-# Analysis Report: Dockerize Your AI App
+# Deployment Validation: Dockerize Your AI App
 
 **Author:** Edward Ocran
 

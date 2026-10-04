@@ -1,4 +1,4 @@
-# Analysis Report: Red Team Your LLM with Adversarial Inputs
+# Safety Evaluation: Red Team Your LLM with Adversarial Inputs
 
 **Author:** Edward Ocran
 

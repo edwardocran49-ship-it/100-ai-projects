@@ -20,8 +20,10 @@ def run_demo(fast:bool|None=None,data:Path|None=None):
         for label,freq in (("calm",180),("angry",680)):
             for i in range(8):files.append(write_tone(d/f"{label}{i}.wav",freq+i*4));labels.append(label)
     else:
-        if data is None: raise ValueError("Provide --data with the RAVDESS directory")
+        data=data or Path(__file__).parent/"data"
+        if not data.exists(): raise FileNotFoundError("Run download_data.py first or provide --data with the RAVDESS directory")
         files,labels=load_ravdess(data)
+        if not files: raise ValueError(f"No RAVDESS WAV files found under {data}")
     result=classify_dataset(files,labels,67)
     return {"project":67,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","dataset":"RAVDESS","metrics":{k:v for k,v in result.items() if k not in {"model","truth","predictions","confusion_matrix"}},"confusion_matrix":result["confusion_matrix"]}
 def main():

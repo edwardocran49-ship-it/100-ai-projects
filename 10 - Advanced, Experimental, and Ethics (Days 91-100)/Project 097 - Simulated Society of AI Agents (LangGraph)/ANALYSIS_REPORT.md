@@ -1,4 +1,4 @@
-# Analysis Report: Simulated Society of AI Agents (LangGraph)
+# Simulation Evaluation: Simulated Society of AI Agents (LangGraph)
 
 **Author:** Edward Ocran
 
