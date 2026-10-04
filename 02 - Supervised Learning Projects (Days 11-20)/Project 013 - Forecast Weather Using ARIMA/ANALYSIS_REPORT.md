@@ -6,21 +6,17 @@
 
 ## Executive Summary
 
-- ARIMA(5,1,1) produces a 4.89°C average error over a 60-day holdout, which is too wide for a dependable operational forecast.
-- The long horizon amplifies a model-design gap: differencing and short autoregressive memory do not capture the full seasonal structure. The result is useful because it identifies exactly where a compact univariate ARIMA stops being competitive.
-- **Recommended action:** Use this as the non-seasonal benchmark and test seasonal/exogenous specifications with rolling origins.
+- The seasonal ARIMA averages 5.01°C error across the 60-day holdout, versus 1.75°C for a weekly-naive forecast.
+- The required seasonal model runs correctly, but the weekly baseline is decisively stronger on this holdout. The result suggests that this SARIMA order is too rigid for the local level and seasonal changes in the temperature series.
+- **Recommended action:** Keep the weekly-naive forecast as the benchmark and retune SARIMA through rolling-origin validation.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Can seasonal ARIMA outperform a weekly-naive forecast for Delhi mean temperature?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+Daily Delhi mean temperature provides 1,462 consecutive observations. The first 1,402 days fit a SARIMA(1,1,1)(1,0,1,7) model and the final 60 days form a chronological holdout. A seven-day seasonal-naive forecast is scored on those same dates so the required seasonal model is judged against a credible minimum benchmark.
 
 ## Results
 
@@ -28,33 +24,27 @@ The reported figures come from the project’s reproducible run. The interpretat
 |---|---:|
 | Daily observations | 1,462 |
 | Forecast horizon | 60 days |
-| Holdout MAE | 4.8914 °C |
+| Seasonal ARIMA MAE | 5.0121°C |
+| Weekly-naive MAE | 1.7464°C |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-ARIMA(5,1,1) produces a 4.89°C average error over a 60-day holdout, which is too wide for a dependable operational forecast.
-
-The long horizon amplifies a model-design gap: differencing and short autoregressive memory do not capture the full seasonal structure. The result is useful because it identifies exactly where a compact univariate ARIMA stops being competitive.
+The required seasonal model runs correctly, but the weekly baseline is decisively stronger on this holdout. The result suggests that this SARIMA order is too rigid for the local level and seasonal changes in the temperature series.
 
 ## Risks and Limitations
 
-The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+The model uses mean temperature alone and one 60-day holdout. Humidity, wind, precipitation, annual seasonality, and changing variance are outside this specification.
 
 ## Recommendations
 
-1. Use this as the non-seasonal benchmark and test seasonal/exogenous specifications with rolling origins.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+1. Keep the weekly-naive forecast as the benchmark and retune SARIMA through rolling-origin validation.
+2. Use rolling-origin validation to tune seasonal periods and orders, and add weather covariates only after the univariate benchmark is stable.
 
 ## Reproducibility Notes
 

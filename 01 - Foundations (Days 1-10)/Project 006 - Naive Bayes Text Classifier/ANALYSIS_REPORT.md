@@ -12,15 +12,11 @@
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Can TF-IDF word evidence separate spam from legitimate SMS messages?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The SMS Spam Collection contains 5,572 labeled messages. English stop words are removed with TF-IDF, and a Multinomial Naive Bayes classifier is fitted on a stratified 80% split. The report keeps the spam class visible through precision, recall, F1, and confusion counts rather than relying on accuracy alone.
 
 ## Results
 
@@ -28,21 +24,18 @@ The reported figures come from the project’s reproducible run. The interpretat
 |---|---:|
 | Messages | 5,572 |
 | Accuracy | 96.86% |
+| Spam precision | 100.00% |
+| Spam recall | 76.51% |
 | Spam F1 | 86.69% |
+| False spam alarms / missed spam | 0 / 35 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-Overall accuracy is 96.86%, but spam F1 is lower at 86.69%; the minority class remains the real analytical challenge.
 
 The ten-point gap between accuracy and spam F1 is a classic imbalance effect. The model is strong at preserving legitimate messages, but the business risk sits in missed scams and legitimate messages incorrectly quarantined.
 
@@ -54,7 +47,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Tune thresholds and compare character n-grams using false-positive and false-negative costs.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

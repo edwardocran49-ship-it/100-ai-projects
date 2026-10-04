@@ -6,45 +6,35 @@
 
 ## Executive Summary
 
-- Count features produce 98.39% accuracy and 93.84% spam F1, a 7.15-point F1 improvement over the TF-IDF baseline in Project 6.
-- Repeated token evidence appears especially useful for this corpus. Because the two projects rely on one split, the comparison is promising rather than conclusive; deduplication and repeated shared folds are needed to isolate representation effects.
-- **Recommended action:** Advance count features to repeated cross-validation and false-positive review.
+- The PDF-specified TF-IDF MultinomialNB pipeline reaches 96.86% accuracy and 86.69% spam F1.
+- The ten-point gap between headline accuracy and spam F1 shows why minority-class performance must remain visible. This implementation now reproduces the required TF-IDF workflow rather than substituting raw count features.
+- **Recommended action:** Retain the required TF-IDF baseline and prioritize class-level error review over headline accuracy.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How effectively does the PDF-specified TF-IDF MultinomialNB pipeline detect SMS spam?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The SMS Spam Collection supplies 5,572 labeled messages. Following the PDF, English stop words are removed with a TF-IDF vectorizer and a Multinomial Naive Bayes classifier is trained on a stratified 80% split.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Messages | 5,572 |
-| Accuracy | 98.39% |
-| Spam F1 | 93.84% |
+| Accuracy | 96.86% |
+| Spam F1 | 86.69% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-Count features produce 98.39% accuracy and 93.84% spam F1, a 7.15-point F1 improvement over the TF-IDF baseline in Project 6.
-
-Repeated token evidence appears especially useful for this corpus. Because the two projects rely on one split, the comparison is promising rather than conclusive; deduplication and repeated shared folds are needed to isolate representation effects.
+The ten-point gap between headline accuracy and spam F1 shows why minority-class performance must remain visible. This implementation now reproduces the required TF-IDF workflow rather than substituting raw count features.
 
 ## Risks and Limitations
 
@@ -52,9 +42,8 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 ## Recommendations
 
-1. Advance count features to repeated cross-validation and false-positive review.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+1. Retain the required TF-IDF baseline and prioritize class-level error review over headline accuracy.
+2. Review false positives and missed spam, then tune the decision threshold and validate across repeated shared folds.
 
 ## Reproducibility Notes
 

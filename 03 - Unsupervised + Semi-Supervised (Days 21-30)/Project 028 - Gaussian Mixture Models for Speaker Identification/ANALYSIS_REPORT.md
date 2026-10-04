@@ -6,21 +6,17 @@
 
 ## Executive Summary
 
-- The GMM identifies speakers at 33.68% accuracy across 24 speakers—about eight times the 4.17% random baseline.
-- The model extracts real speaker signal from simple spectral bands, but two thirds of clips remain misidentified. Emotion, intensity, and utterance content vary within RAVDESS and likely confound the compact features.
+- The eight-component GMM identifies speakers at 86.11% accuracy across 24 speakers—more than twenty times the 4.17% random baseline.
+- Replacing generic spectral bands with the PDF-specified 13 MFCC coefficients produces a major improvement. The remaining errors likely reflect emotional delivery, intensity, and utterance variation within the RAVDESS recordings.
 - **Recommended action:** Use this as an interpretable baseline and add MFCCs plus speaker-balanced validation.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Can MFCC-based Gaussian mixture models identify 24 speakers from held-out speech clips?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The analysis uses all 1,440 RAVDESS speech clips from 24 speakers. Each recording is converted to 13 MFCC coefficients, matching the PDF feature specification. One eight-component diagonal-covariance Gaussian mixture model is trained per speaker; every fifth clip is reserved for testing.
 
 ## Results
 
@@ -28,33 +24,27 @@ The reported figures come from the project’s reproducible run. The interpretat
 |---|---:|
 | Audio clips | 1,440 |
 | Speakers | 24 |
-| Accuracy | 33.68% |
+| MFCC coefficients | 13 |
+| Holdout accuracy | 86.11% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The GMM identifies speakers at 33.68% accuracy across 24 speakers—about eight times the 4.17% random baseline.
-
-The model extracts real speaker signal from simple spectral bands, but two thirds of clips remain misidentified. Emotion, intensity, and utterance content vary within RAVDESS and likely confound the compact features.
+Replacing generic spectral bands with the PDF-specified 13 MFCC coefficients produces a major improvement. The remaining errors likely reflect emotional delivery, intensity, and utterance variation within the RAVDESS recordings.
 
 ## Risks and Limitations
 
-The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+The split is deterministic rather than session-based, and the dataset uses controlled recordings. Microphone, room, language, and background-noise shifts remain untested.
 
 ## Recommendations
 
 1. Use this as an interpretable baseline and add MFCCs plus speaker-balanced validation.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+2. Evaluate speaker-balanced cross-validation and robustness under added noise and channel changes.
 
 ## Reproducibility Notes
 

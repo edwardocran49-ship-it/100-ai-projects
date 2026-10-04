@@ -6,43 +6,33 @@
 
 ## Executive Summary
 
-- Five customer clusters achieve a 0.6642 silhouette score among the top 2,000 customers by spend, indicating strong separation within that selected population.
+- The PDF-specified three-cluster cut reaches a 0.9264 silhouette score among the top 2,000 customers by spend, indicating exceptionally strong separation within that selected population.
 - The high score is encouraging, but the top-spender filter shapes the geometry and excludes the long tail. The clusters describe high-value customer behavior—spend, frequency, basket size, and recency—not the full customer base.
 - **Recommended action:** Profile cluster economics and repeat the analysis on the complete customer population before activation.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Do three Ward-linkage clusters separate high-value online retail customers cleanly?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+Positive-value UCI Online Retail transactions are aggregated into customer spend, purchase frequency, average cart value, and recency. The top 2,000 customers by spend are standardized, linked with Ward's method, and cut into the three clusters specified in the PDF.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Customers analyzed | 2,000 |
-| Clusters | 5 |
-| Silhouette | 0.6642 |
+| Clusters | 3 |
+| Silhouette score | 0.9264 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-Five customer clusters achieve a 0.6642 silhouette score among the top 2,000 customers by spend, indicating strong separation within that selected population.
 
 The high score is encouraging, but the top-spender filter shapes the geometry and excludes the long tail. The clusters describe high-value customer behavior—spend, frequency, basket size, and recency—not the full customer base.
 
@@ -53,8 +43,7 @@ The available evaluation is a project benchmark and should be validated on a sep
 ## Recommendations
 
 1. Profile cluster economics and repeat the analysis on the complete customer population before activation.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+2. Profile the three clusters in business terms and repeat the analysis on the full customer population to test whether the strong separation survives outside the top-spender subset.
 
 ## Reproducibility Notes
 

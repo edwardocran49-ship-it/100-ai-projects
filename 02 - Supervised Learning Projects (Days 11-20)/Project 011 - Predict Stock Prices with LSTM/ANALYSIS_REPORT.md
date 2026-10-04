@@ -6,54 +6,44 @@
 
 ## Executive Summary
 
-- The sequence model misses the next adjusted close by $4.73 on average across the chronological holdout.
-- The dollar error is interpretable but incomplete without a same-period naive forecast. Equity prices are highly persistent, so a complex sequence representation must beat “tomorrow equals today” and survive walk-forward evaluation to demonstrate incremental signal.
-- **Recommended action:** Add naive and moving-average benchmarks before making any claim of forecasting advantage.
+- The trained LSTM records $3.25 MAE, nearly level with but slightly worse than the $3.19 last-price baseline.
+- The model has learned a stable next-day forecast, but it has not demonstrated incremental predictive value over price persistence. The 6-cent MAE gap is small, yet the simpler baseline remains the better choice on this holdout.
+- **Recommended action:** Keep the last-price forecast as the current benchmark; the LSTM has not earned a complexity advantage.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Does a trained LSTM improve next-day AAPL forecasts over using the latest closing price?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The run uses 1,255 adjusted AAPL daily closing prices downloaded through `yfinance`. Sixty-day sequences feed a trained TensorFlow LSTM with 32 recurrent units and a dense output. The last 20% of observations form a chronological holdout. A last-price forecast is evaluated on exactly the same dates as the required LSTM benchmark.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Trading days | 1,255 |
-| Holdout MAE | $4.7309 |
+| LSTM holdout MAE | $3.2475 |
+| Last-price baseline MAE | $3.1850 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The sequence model misses the next adjusted close by $4.73 on average across the chronological holdout.
-
-The dollar error is interpretable but incomplete without a same-period naive forecast. Equity prices are highly persistent, so a complex sequence representation must beat “tomorrow equals today” and survive walk-forward evaluation to demonstrate incremental signal.
+The model has learned a stable next-day forecast, but it has not demonstrated incremental predictive value over price persistence. The 6-cent MAE gap is small, yet the simpler baseline remains the better choice on this holdout.
 
 ## Risks and Limitations
 
-The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+The evaluation covers one ticker and one chronological holdout. The model does not include volume, corporate events, macroeconomic variables, or trading costs. It is a forecasting exercise, not trading advice.
 
 ## Recommendations
 
-1. Add naive and moving-average benchmarks before making any claim of forecasting advantage.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+1. Keep the last-price forecast as the current benchmark; the LSTM has not earned a complexity advantage.
+2. Use rolling-origin retraining, compare directional accuracy, and test whether volume or volatility features improve on the last-price baseline.
 
 ## Reproducibility Notes
 

@@ -17,6 +17,8 @@ A 100-project AI learning portfolio organized into ten course-aligned sections. 
 
 ## Validate everything
 
+Use Python 3.11 or 3.12. These versions support the TensorFlow projects in the portfolio.
+
 ```powershell
 python -m pip install -r requirements.txt
 python validate_all.py

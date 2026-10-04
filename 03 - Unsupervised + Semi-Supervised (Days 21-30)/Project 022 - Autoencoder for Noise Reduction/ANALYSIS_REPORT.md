@@ -6,21 +6,17 @@
 
 ## Executive Summary
 
-- The linear autoencoder reduces reconstruction MSE from 0.06232 to 0.03263, removing 47.64% of injected-noise error.
-- The reduction is material: nearly half of the corruption is removed using a compact 48-component representation. The remaining error reflects both unrecovered detail and the linear model’s tendency to smooth fine strokes.
+- The fully connected autoencoder reduces reconstruction MSE from 0.06232 to 0.03242, removing 47.98% of injected-noise error.
+- The reduction is material: nearly half of the corruption is removed through a learned 64-unit bottleneck. The remaining error reflects both unrecovered detail and the network’s tendency to smooth fine strokes.
 - **Recommended action:** Preserve this benchmark and compare with a nonlinear convolutional autoencoder using the same corruption process.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How much injected image noise can a trained fully connected autoencoder remove?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The run uses 6,000 MNIST images scaled to 0-1. Gaussian noise with standard deviation 0.35 is added to each image. A trained fully connected TensorFlow autoencoder compresses 784 pixels through a 64-unit bottleneck and reconstructs the clean target; 5,000 images train the network and 1,000 test it.
 
 ## Results
 
@@ -28,33 +24,27 @@ The reported figures come from the project’s reproducible run. The interpretat
 |---|---:|
 | Images | 6,000 |
 | Noisy-input MSE | 0.06232 |
-| Reconstructed MSE | 0.03263 |
+| Autoencoder reconstruction MSE | 0.03242 |
+| Error removed | 47.98% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The linear autoencoder reduces reconstruction MSE from 0.06232 to 0.03263, removing 47.64% of injected-noise error.
-
-The reduction is material: nearly half of the corruption is removed using a compact 48-component representation. The remaining error reflects both unrecovered detail and the linear model’s tendency to smooth fine strokes.
+The reduction is material: nearly half of the corruption is removed through a learned 64-unit bottleneck. The remaining error reflects both unrecovered detail and the network’s tendency to smooth fine strokes.
 
 ## Risks and Limitations
 
-The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+The corruption is simulated and MSE does not capture every aspect of visual quality. The evaluation uses a sampled MNIST file rather than the official test split.
 
 ## Recommendations
 
 1. Preserve this benchmark and compare with a nonlinear convolutional autoencoder using the same corruption process.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+2. Save before-and-after image grids and compare the dense model with a convolutional autoencoder under the same noise process.
 
 ## Reproducibility Notes
 

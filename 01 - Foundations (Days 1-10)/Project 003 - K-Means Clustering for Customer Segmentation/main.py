@@ -15,8 +15,12 @@ def run_demo():
     df = pd.read_csv(DATA)
     X = df[["Annual Income (k$)", "Spending Score (1-100)"]]
     scaled = StandardScaler().fit_transform(X)
+    inertias = {}
+    for cluster_count in range(1, 11):
+        fitted = KMeans(n_clusters=cluster_count, n_init=20, random_state=42).fit(scaled)
+        inertias[str(cluster_count)] = round(float(fitted.inertia_), 3)
     labels = KMeans(n_clusters=5, n_init=20, random_state=42).fit_predict(scaled)
-    return {"project": 3, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Mall Customers", "records": len(df), "clusters": 5, "metrics": {"silhouette": round(float(silhouette_score(scaled, labels)), 4)}}
+    return {"project": 3, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Mall Customers", "records": len(df), "clusters": 5, "metrics": {"silhouette": round(float(silhouette_score(scaled, labels)), 4)}, "elbow_inertia": inertias}
 
 def main() -> None:
     import argparse, json

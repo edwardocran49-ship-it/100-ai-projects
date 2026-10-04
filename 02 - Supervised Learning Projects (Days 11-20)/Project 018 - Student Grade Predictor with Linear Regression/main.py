@@ -5,7 +5,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import LinearRegression
 from download_data import ensure_dataset
 
 PROJECT_TITLE = "Student Grade Predictor with Linear Regression"
@@ -16,7 +16,7 @@ def run_demo():
     categorical = X.select_dtypes(exclude="number").columns.tolist(); numeric = X.select_dtypes(include="number").columns.tolist()
     prep = ColumnTransformer([("num", StandardScaler(), numeric), ("cat", OneHotEncoder(handle_unknown="ignore"), categorical)])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=42)
-    model = make_pipeline(prep, Ridge(alpha=5)).fit(X_train, y_train); pred = model.predict(X_test)
+    model = make_pipeline(prep, LinearRegression()).fit(X_train, y_train); pred = model.predict(X_test)
     return {"project": 18, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "UCI Student Performance (Portuguese)", "records": len(df), "metrics": {"mae_grade_points": round(float(mean_absolute_error(y_test, pred)), 4), "r2": round(float(r2_score(y_test, pred)), 4)}}
 
 def main() -> None:

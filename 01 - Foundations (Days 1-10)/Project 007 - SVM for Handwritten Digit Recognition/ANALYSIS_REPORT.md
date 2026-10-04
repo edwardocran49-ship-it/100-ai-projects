@@ -12,36 +12,28 @@
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How well does an RBF support-vector machine recognize small handwritten digit images?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The scikit-learn handwritten-digits dataset contributes 1,797 eight-by-eight images. Pixel values are standardized and classified with an RBF support-vector machine on a stratified 80/20 split. Accuracy, macro F1, and the complete ten-class confusion matrix are emitted by the project run.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Images | 1,797 |
-| Holdout accuracy | 98.06% |
+| Digit images | 1,797 |
+| Accuracy | 98.06% |
+| Macro F1 | 98.05% |
+| Correct / incorrect holdout predictions | 353 / 7 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-The RBF SVM classifies 98.06% of holdout digits correctly—an 88-point lift over random ten-class choice.
 
 Performance is strong enough that aggregate accuracy no longer reveals the main opportunity. Error concentration by digit pair and robustness to shifts, blur, and rotation will provide more useful information than another decimal place of accuracy.
 
@@ -53,7 +45,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Preserve this benchmark and focus the next iteration on error taxonomy and robustness.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

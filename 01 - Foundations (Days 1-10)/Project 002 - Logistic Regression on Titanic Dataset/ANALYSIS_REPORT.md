@@ -6,44 +6,38 @@
 
 ## Executive Summary
 
-- The logistic model reaches 74.81% accuracy, about 13 percentage points above a majority-class rule.
-- The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
+- The logistic model reaches 74.81% accuracy, but identifies only 36.76% of survivors in the holdout.
+- The confusion counts sharpen the result: the model correctly identifies 171 non-survivors and 25 survivors, while missing 43 survivors. Accuracy alone therefore overstates how well the positive class is served.
 - **Recommended action:** Retain the model as a transparent baseline and evaluate class-level errors before comparing more complex estimators.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Can basic passenger information produce a useful Titanic survival baseline?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The Titanic file contains 1,309 passengers. Age and fare are median-imputed and standardized; sex, class, and embarkation point are imputed and one-hot encoded. A logistic regression is trained on a stratified 80% split. Accuracy, positive-class precision, recall, F1, and the four confusion-matrix counts are measured on the untouched holdout.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Passengers | 1,309 |
-| Holdout accuracy | 74.81% |
+| Accuracy | 74.81% |
+| Survivor precision | 52.08% |
+| Survivor recall | 36.76% |
+| Survivor F1 | 43.10% |
+| Confusion matrix (TN / FP / FN / TP) | 171 / 23 / 43 / 25 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The logistic model reaches 74.81% accuracy, about 13 percentage points above a majority-class rule.
-
-The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
+The confusion counts sharpen the result: the model correctly identifies 171 non-survivors and 25 survivors, while missing 43 survivors. Accuracy alone therefore overstates how well the positive class is served.
 
 ## Risks and Limitations
 
@@ -53,7 +47,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Retain the model as a transparent baseline and evaluate class-level errors before comparing more complex estimators.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

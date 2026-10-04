@@ -12,37 +12,30 @@
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Do annual income and spending score form distinct customer segments?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The Mall Customers file supplies annual income and spending score for 200 customers. Both variables are standardized. K-means is fitted for one through ten clusters to produce the elbow series, after which the course-selected five-cluster solution is evaluated with silhouette score.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Customers | 200 |
-| Clusters | 5 |
+| Selected clusters | 5 |
 | Silhouette score | 0.5547 |
+| Inertia at k=1 | 400.000 |
+| Inertia at k=5 | 65.568 |
+| Inertia at k=10 | 29.686 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-Five income-spending segments achieve a 0.5547 silhouette score, indicating useful but not perfect separation.
 
 The geometry supports distinct customer groups, yet nearly half of the theoretical separation range remains unresolved. These clusters are best treated as hypotheses for targeting, then validated against purchase frequency, margin, or campaign response.
 
@@ -54,7 +47,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Use the segments for exploratory targeting tests, not as permanent customer labels.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

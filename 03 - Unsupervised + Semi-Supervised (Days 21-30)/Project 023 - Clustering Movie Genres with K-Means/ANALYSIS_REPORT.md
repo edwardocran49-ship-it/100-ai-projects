@@ -12,13 +12,9 @@
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Do MovieLens genre combinations form useful K-means catalog neighborhoods?
 
 ## Data and Evaluation Design
-
-
-
-
 
 The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
@@ -34,11 +30,7 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -54,7 +46,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Inspect cluster genre compositions and test recommendation usefulness rather than chasing separation alone.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

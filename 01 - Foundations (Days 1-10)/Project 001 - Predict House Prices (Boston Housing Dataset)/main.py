@@ -42,6 +42,10 @@ def run_demo() -> dict[str, Any]:
     slope, intercept = fit_line(train)
     predictions = [slope * rooms + intercept for rooms, _ in test]
     mae = sum(abs(actual - predicted) for (_, actual), predicted in zip(test, predictions)) / len(test)
+    mse = sum((actual - predicted) ** 2 for (_, actual), predicted in zip(test, predictions)) / len(test)
+    actual_mean = sum(actual for _, actual in test) / len(test)
+    total_variation = sum((actual - actual_mean) ** 2 for _, actual in test)
+    r2 = 1 - (mse * len(test) / total_variation)
     return {
         "project": PROJECT_NUMBER,
         "title": PROJECT_TITLE,
@@ -53,7 +57,12 @@ def run_demo() -> dict[str, Any]:
         "records": len(rows),
         "features_used": ["RM"],
         "target": "MEDV",
-        "metrics": {"mae": round(mae, 4), "slope": round(slope, 4)},
+        "metrics": {
+            "mae": round(mae, 4),
+            "mse": round(mse, 4),
+            "r2": round(r2, 4),
+            "slope": round(slope, 4),
+        },
         "sample_prediction": round(predictions[0], 3),
     }
 

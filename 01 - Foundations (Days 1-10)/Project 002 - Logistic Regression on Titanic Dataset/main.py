@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -28,7 +28,10 @@ def run_demo():
     model = make_pipeline(prep, LogisticRegression(max_iter=1000))
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=42, stratify=y)
     model.fit(X_train, y_train)
-    return {"project": 2, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Titanic", "records": len(df), "metrics": {"accuracy": round(float(accuracy_score(y_test, model.predict(X_test))), 4)}}
+    pred = model.predict(X_test)
+    precision, recall, f1, _ = precision_recall_fscore_support(y_test, pred, average="binary", zero_division=0)
+    tn, fp, fn, tp = confusion_matrix(y_test, pred).ravel()
+    return {"project": 2, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Titanic", "records": len(df), "metrics": {"accuracy": round(float(accuracy_score(y_test, pred)), 4), "precision": round(float(precision), 4), "recall": round(float(recall), 4), "f1": round(float(f1), 4), "true_negative": int(tn), "false_positive": int(fp), "false_negative": int(fn), "true_positive": int(tp)}}
 
 def main() -> None:
     import argparse, json

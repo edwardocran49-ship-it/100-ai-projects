@@ -6,44 +6,38 @@
 
 ## Executive Summary
 
-- The forest reaches 95.61% accuracy, roughly 32.9 percentage points above the majority-class baseline.
-- The margin over baseline is substantial and supports the value of the diagnostic measurements. For screening, however, the decisive metric is malignant-case sensitivity; a small number of false negatives can matter more than many correct benign classifications.
+- The forest reaches 95.61% accuracy and 97.22% recall for the encoded positive class, with five errors across 114 holdout cases.
+- The confusion counts show three false positives and two false negatives. The model separates this holdout well, though medical use would still require confirming which label is treated as the clinically critical class and validating sensitivity on an external cohort.
 - **Recommended action:** Move next to sensitivity, specificity, calibration, and external-cohort validation.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How accurately can a random forest classify the Wisconsin diagnostic measurements?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The Wisconsin Diagnostic Breast Cancer dataset contains 569 cases and 30 measured features. A 150-tree random forest is fitted on a stratified 80% training split. The holdout evaluation includes accuracy, precision, recall, F1, confusion counts, and ranked feature importance as requested in the course procedure.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Samples | 569 |
-| Holdout accuracy | 95.61% |
+| Cases | 569 |
+| Accuracy | 95.61% |
+| Precision | 95.89% |
+| Recall | 97.22% |
+| F1 | 96.55% |
+| Confusion matrix (TN / FP / FN / TP) | 39 / 3 / 2 / 70 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The forest reaches 95.61% accuracy, roughly 32.9 percentage points above the majority-class baseline.
-
-The margin over baseline is substantial and supports the value of the diagnostic measurements. For screening, however, the decisive metric is malignant-case sensitivity; a small number of false negatives can matter more than many correct benign classifications.
+The confusion counts show three false positives and two false negatives. The model separates this holdout well, though medical use would still require confirming which label is treated as the clinically critical class and validating sensitivity on an external cohort.
 
 ## Risks and Limitations
 
@@ -53,7 +47,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Move next to sensitivity, specificity, calibration, and external-cohort validation.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

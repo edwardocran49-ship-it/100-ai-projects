@@ -6,44 +6,35 @@
 
 ## Executive Summary
 
-- The 70% headline accuracy only matches the majority-class baseline, so the current tree does not yet demonstrate incremental decision value.
-- This is the most important finding in the project: a seemingly acceptable accuracy can be operationally empty. Credit decisions require class-specific recall, cost-weighted errors, calibration, and fairness checks; none can be replaced by overall accuracy.
+- The entropy tree reaches 70.50% accuracy, only 0.50 percentage points above the majority-class baseline.
+- This is the most important finding in the project: a seemingly acceptable accuracy can offer almost no incremental decision value. Credit decisions require class-specific recall, cost-weighted errors, calibration, and fairness checks; none can be replaced by overall accuracy.
 - **Recommended action:** Do not advance this specification until it beats the majority rule on cost-sensitive and class-level measures.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Does a shallow entropy tree add useful signal beyond the majority credit-risk class?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The analysis uses 1,000 records from the German Credit dataset. Categorical fields are imputed and one-hot encoded; numeric gaps are median-imputed. Following the course procedure, an entropy-based decision tree is capped at depth three and evaluated on a stratified 80/20 split.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Applicants | 1,000 |
-| Holdout accuracy | 70.00% |
+| Holdout accuracy | 70.50% |
+| Majority-class baseline | 70.00% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The 70% headline accuracy only matches the majority-class baseline, so the current tree does not yet demonstrate incremental decision value.
-
-This is the most important finding in the project: a seemingly acceptable accuracy can be operationally empty. Credit decisions require class-specific recall, cost-weighted errors, calibration, and fairness checks; none can be replaced by overall accuracy.
+This is the most important finding in the project: a seemingly acceptable accuracy can offer almost no incremental decision value. Credit decisions require class-specific recall, cost-weighted errors, calibration, and fairness checks; none can be replaced by overall accuracy.
 
 ## Risks and Limitations
 
@@ -53,7 +44,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Do not advance this specification until it beats the majority rule on cost-sensitive and class-level measures.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

@@ -6,43 +6,36 @@
 
 ## Executive Summary
 
-- The boosted model reaches 85.80% accuracy and 91.37% ROC AUC, indicating strong ranking ability on the holdout split.
+- The boosted model reaches 97.07% accuracy and 99.00% ROC AUC on the holdout split.
 - AUC is the stronger result because it evaluates ranking across thresholds. The duplicated records in the source can make a random split optimistic if near-identical cases cross the train-test boundary, so deduplication and patient-level separation are essential checks.
 - **Recommended action:** Deduplicate, calibrate probabilities, and select thresholds around clinical false-negative cost.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Can gradient-boosted trees rank heart-disease risk from the supplied clinical attributes?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The heart-disease table contains 1,025 labeled records. An XGBoost classifier with bounded depth, subsampling, and column sampling is trained on a stratified 80% split. Accuracy, precision, recall, F1, and ROC AUC are calculated on the holdout.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
 | Records | 1,025 |
-| Accuracy | 96.59% |
-| ROC AUC | 0.9866 |
+| Accuracy | 97.07% |
+| Precision | 97.14% |
+| Recall | 97.14% |
+| F1 | 97.14% |
+| ROC AUC | 99.00% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-The boosted model reaches 85.80% accuracy and 91.37% ROC AUC, indicating strong ranking ability on the holdout split.
 
 AUC is the stronger result because it evaluates ranking across thresholds. The duplicated records in the source can make a random split optimistic if near-identical cases cross the train-test boundary, so deduplication and patient-level separation are essential checks.
 
@@ -54,7 +47,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Deduplicate, calibrate probabilities, and select thresholds around clinical false-negative cost.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

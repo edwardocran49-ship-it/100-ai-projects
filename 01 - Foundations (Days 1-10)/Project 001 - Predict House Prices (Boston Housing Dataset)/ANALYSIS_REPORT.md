@@ -6,45 +6,37 @@
 
 ## Executive Summary
 
-- Average room count carries a clear price signal, but a one-variable model still misses by about $4.1k on an average holdout property.
-- The slope is economically meaningful: an additional room is associated with about $9.1k in median value. The remaining error shows that room count explains only one part of the pricing structure; location, condition, tax, and neighborhood variables still carry material information.
+- Average room count explains 49.22% of holdout price variation, with a $4.07k mean absolute error.
+- The slope remains economically meaningful: an additional room is associated with about $9.1k in median value. The R² result also makes the boundary clear—roughly half of holdout variation sits outside this single-feature model.
 - **Recommended action:** Use this as an interpretable benchmark, not as a valuation engine.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How much signal does average room count carry for Boston-area home values?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The Kaggle Boston Housing file contributes 506 usable records. Following the course exercise, average rooms (`RM`) is the explanatory variable and median home value (`MEDV`) is the target. A hand-built least-squares line is trained on 80% of the records and assessed on the remaining 20% with MAE, MSE, and R².
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Usable records | 506 |
-| Holdout MAE | 4.0726 |
-| Fitted slope | 9.0887 |
+| Properties | 506 |
+| Holdout MAE | $4.0726k |
+| Holdout MSE | 33.1641 |
+| Holdout R² | 0.4922 |
+| Value change per additional room | $9.0887k |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-Average room count carries a clear price signal, but a one-variable model still misses by about $4.1k on an average holdout property.
-
-The slope is economically meaningful: an additional room is associated with about $9.1k in median value. The remaining error shows that room count explains only one part of the pricing structure; location, condition, tax, and neighborhood variables still carry material information.
+The slope remains economically meaningful: an additional room is associated with about $9.1k in median value. The R² result also makes the boundary clear—roughly half of holdout variation sits outside this single-feature model.
 
 ## Risks and Limitations
 
@@ -54,7 +46,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Use this as an interpretable benchmark, not as a valuation engine.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

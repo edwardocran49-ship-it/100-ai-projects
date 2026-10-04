@@ -6,42 +6,36 @@
 
 ## Executive Summary
 
-- The voice classifier records 97.16% holdout accuracy on the supplied acoustic-feature table.
+- The voice classifier records 98.42% holdout accuracy, with ten errors across 634 recordings.
 - The high score is evidence that the engineered frequency features separate the dataset labels well. It should not be generalized to gender identity or deployed on unseen microphones, languages, age groups, or recording conditions without broader validation.
 - **Recommended action:** Test speaker-disjoint splits and report calibration and subgroup performance.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How well do the supplied acoustic measurements separate the dataset's voice labels?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The voice-recognition table contains 3,168 recordings described by measured acoustic features. A 180-tree random forest is fitted on a stratified 80% split. The holdout evaluation reports overall accuracy, male-class precision, recall and F1, plus the four confusion counts.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Samples | 3,168 |
-| Holdout accuracy | 98.42% |
+| Recordings | 3,168 |
+| Accuracy | 98.42% |
+| Male precision | 98.12% |
+| Male recall | 98.74% |
+| Male F1 | 98.43% |
+| Confusion matrix (TN / FP / FN / TP) | 311 / 6 / 4 / 313 |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-The voice classifier records 97.16% holdout accuracy on the supplied acoustic-feature table.
 
 The high score is evidence that the engineered frequency features separate the dataset labels well. It should not be generalized to gender identity or deployed on unseen microphones, languages, age groups, or recording conditions without broader validation.
 
@@ -53,7 +47,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Test speaker-disjoint splits and report calibration and subgroup performance.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

@@ -6,54 +6,45 @@
 
 ## Executive Summary
 
-- The model’s average hourly miss is 29.69 rentals across 17.2k chronologically ordered observations.
-- The same absolute miss has different operational meaning by demand level: thirty bikes can be negligible during a rush-hour peak and material overnight. Segmenting error by hour, season, and demand band will expose where rebalancing decisions are most vulnerable.
-- **Recommended action:** Evaluate against seasonal-naive forecasts and report error by operating regime.
+- Seasonal ARIMA records 1,542 daily-rental MAE over the 30-day holdout, trailing the weekly naive forecast at 1,354.
+- The required time-series model runs correctly, but the weekly seasonal baseline is about 12% better on this holdout. The result points to unmodeled trend, weather, and calendar effects rather than a lack of weekly seasonality.
+- **Recommended action:** Keep the weekly naive forecast as the current benchmark and retune the seasonal ARIMA specification.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+Can seasonal ARIMA outperform a weekly naive forecast for daily bike demand?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+Hourly Washington, D.C. bike-share records are aggregated to 731 daily totals to match the PDF's daily time-series procedure. A seasonal ARIMA model with weekly seasonality is fitted through the first 701 days and forecasts the final 30 days. A weekly seasonal-naive forecast provides the operating benchmark.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Modeled hours | 17,211 |
-| Holdout MAE | 29.6857 rentals |
+| Daily observations | 731 |
+| Forecast horizon | 30 days |
+| Seasonal ARIMA MAE | 1,542.319 rentals |
+| Weekly naive MAE | 1,354.300 rentals |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The model’s average hourly miss is 29.69 rentals across 17.2k chronologically ordered observations.
-
-The same absolute miss has different operational meaning by demand level: thirty bikes can be negligible during a rush-hour peak and material overnight. Segmenting error by hour, season, and demand band will expose where rebalancing decisions are most vulnerable.
+The required time-series model runs correctly, but the weekly seasonal baseline is about 12% better on this holdout. The result points to unmodeled trend, weather, and calendar effects rather than a lack of weekly seasonality.
 
 ## Risks and Limitations
 
-The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+The univariate model does not include weather, holidays, or station-level capacity, and one 30-day holdout does not establish performance across seasons.
 
 ## Recommendations
 
-1. Evaluate against seasonal-naive forecasts and report error by operating regime.
-2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+1. Keep the weekly naive forecast as the current benchmark and retune the seasonal ARIMA specification.
+2. Add weather and calendar regressors, tune the seasonal orders with rolling validation, and retain the weekly naive forecast as the minimum benchmark.
 
 ## Reproducibility Notes
 

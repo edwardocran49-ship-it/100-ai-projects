@@ -1,21 +1,28 @@
-"""Bike-rental forecasting on hourly Capital Bikeshare observations."""
+"""Seasonal ARIMA forecast of daily Capital Bikeshare demand."""
 import pandas as pd
-from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 from download_data import ensure_dataset
 
 PROJECT_TITLE = "Predict Bike Rentals with Time-Series Models"
 
 def run_demo():
-    df = pd.read_csv(ensure_dataset()).sort_values(["dteday", "hr"])
-    for lag in (1, 24, 168):
-        df[f"lag_{lag}"] = df["cnt"].shift(lag)
-    df = df.dropna()
-    features = ["season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit", "temp", "atemp", "hum", "windspeed", "lag_1", "lag_24", "lag_168"]
-    split = int(len(df) * .8)
-    model = HistGradientBoostingRegressor(max_iter=150, random_state=42).fit(df[features].iloc[:split], df.cnt.iloc[:split])
-    prediction = model.predict(df[features].iloc[split:])
-    return {"project": 12, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Bike Sharing in Washington D.C.", "records": len(df), "metrics": {"mae_rentals": round(float(mean_absolute_error(df.cnt.iloc[split:], prediction)), 4)}}
+    hourly = pd.read_csv(ensure_dataset())
+    daily = hourly.groupby("dteday", as_index=False)["cnt"].sum()
+    daily["dteday"] = pd.to_datetime(daily["dteday"])
+    series = daily.set_index("dteday")["cnt"].asfreq("D")
+    split = len(series) - 30
+    model = SARIMAX(
+        series.iloc[:split],
+        order=(1, 1, 1),
+        seasonal_order=(1, 0, 1, 7),
+        enforce_stationarity=False,
+        enforce_invertibility=False,
+    ).fit(disp=False, maxiter=100)
+    prediction = model.forecast(len(series) - split)
+    actual = series.iloc[split:]
+    seasonal_naive = series.shift(7).iloc[split:]
+    return {"project": 12, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Bike Sharing in Washington D.C.", "records": len(series), "model": "seasonal ARIMA (SARIMA)", "metrics": {"mae_rentals": round(float(mean_absolute_error(actual, prediction)), 4), "seasonal_naive_mae": round(float(mean_absolute_error(actual, seasonal_naive)), 4)}}
 
 def main() -> None:
     import argparse, json

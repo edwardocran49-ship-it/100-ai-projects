@@ -6,45 +6,37 @@
 
 ## Executive Summary
 
-- The flight model reaches 83.69% accuracy and approximately 77% delay-class F1 on a 75k-row sample.
-- The lower delay F1 shows that positive-case detection is materially harder than the headline accuracy suggests. Operational value will depend on recall at an alert volume planners can absorb, particularly across carriers, airports, and departure periods.
+- The gradient-boosted flight model reaches 73.05% accuracy, but detects only 42.57% of delayed arrivals.
+- Precision is materially stronger than recall: when the model flags a delay it is right 67.78% of the time, yet it misses more than half of actual delays. That tradeoff limits its usefulness for proactive passenger or staffing decisions.
 - **Recommended action:** Report precision-recall tradeoffs and performance by carrier and time block.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How reliably can schedule and route information identify delayed flights?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The project uses 73,111 non-cancelled records from the 2015 U.S. flight-delay dataset. Calendar, route, airline, scheduled departure, and distance fields are prepared without using arrival information available only after the prediction point. A 100-tree gradient boosting classifier is fitted on a stratified 80% split and evaluated on the untouched holdout.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Flights modeled | 73,111 |
-| Accuracy | 75.34% |
-| Delayed-flight F1 | 58.69% |
+| Flights | 73,111 |
+| Accuracy | 73.05% |
+| Delay precision | 67.78% |
+| Delay recall | 42.57% |
+| Delay F1 | 52.29% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
-
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
-The flight model reaches 83.69% accuracy and approximately 77% delay-class F1 on a 75k-row sample.
-
-The lower delay F1 shows that positive-case detection is materially harder than the headline accuracy suggests. Operational value will depend on recall at an alert volume planners can absorb, particularly across carriers, airports, and departure periods.
+Precision is materially stronger than recall: when the model flags a delay it is right 67.78% of the time, yet it misses more than half of actual delays. That tradeoff limits its usefulness for proactive passenger or staffing decisions.
 
 ## Risks and Limitations
 
@@ -54,7 +46,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Report precision-recall tradeoffs and performance by carrier and time block.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 

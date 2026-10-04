@@ -7,3 +7,4 @@ statsmodels>=0.14,<1
 xgboost>=3,<4
 yfinance>=1,<2
 matplotlib>=3.10,<4
+tensorflow>=2.17,<3

@@ -6,42 +6,33 @@
 
 ## Executive Summary
 
-- The convolution-feature classifier reaches 95.00% accuracy on the MNIST holdout.
+- The trained two-layer CNN reaches 95.45% accuracy on the MNIST holdout.
 - The result demonstrates that local edge and pooling features capture most of the signal in clean handwritten digits. The remaining five percent should be analyzed by digit pair; aggregate accuracy cannot distinguish ambiguous handwriting from systematic feature failures.
 - **Recommended action:** Add a class-level confusion matrix and robustness checks under noise and small spatial shifts.
 
 ## Analytical Question
 
-What does the verified model result reveal, and how should it be used?
+How accurately does a trained two-layer CNN classify held-out MNIST digits?
 
 ## Data and Evaluation Design
 
-
-
-
-
-The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
+The project trains the PDF-specified convolutional neural network on 12,000 MNIST images. Ten thousand images train two learned convolution layers with max pooling and dense classification layers; 2,000 images are held out for evaluation.
 
 ## Results
 
 | Measure | Result |
 |---|---:|
-| Images used | 12,000 |
-| Holdout accuracy | 93.40% |
+| Images | 12,000 |
+| Training images | 10,000 |
+| Holdout accuracy | 95.45% |
 
 ## Visual Evidence
 
 ![Verified model performance](analysis/performance.png)
 
-This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
-
 ![Benchmark and analytical context](analysis/context.png)
 
-This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
-
 ## What the Evidence Says
-
-The convolution-feature classifier reaches 95.00% accuracy on the MNIST holdout.
 
 The result demonstrates that local edge and pooling features capture most of the signal in clean handwritten digits. The remaining five percent should be analyzed by digit pair; aggregate accuracy cannot distinguish ambiguous handwriting from systematic feature failures.
 
@@ -53,7 +44,6 @@ The available evaluation is a project benchmark and should be validated on a sep
 
 1. Add a class-level confusion matrix and robustness checks under noise and small spatial shifts.
 2. Extend the validation with stronger baselines and segmented error analysis.
-3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
 
 ## Reproducibility Notes
 
