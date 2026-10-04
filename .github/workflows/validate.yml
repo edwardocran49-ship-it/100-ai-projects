@@ -18,5 +18,11 @@ jobs:
           cache: pip
       - name: Install shared validation dependencies
         run: python -m pip install -r requirements.txt
+      - name: Seed real AAPL reference data for the isolated runner
+        run: |
+          mkdir -p "02 - Supervised Learning Projects (Days 11-20)/Project 011 - Predict Stock Prices with LSTM/data"
+          curl --fail --silent --show-error --location --retry 5 --retry-all-errors \
+            https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv \
+            --output "02 - Supervised Learning Projects (Days 11-20)/Project 011 - Predict Stock Prices with LSTM/data/AAPL.csv"
       - name: Run every project
         run: python validate_all.py

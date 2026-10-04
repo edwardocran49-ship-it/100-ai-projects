@@ -1,9 +1,37 @@
 """Download and cache adjusted AAPL daily prices with yfinance."""
 from pathlib import Path
+import csv
+import io
 import time
+import requests
 import yfinance as yf
 
 DESTINATION = Path(__file__).with_name("data") / "AAPL.csv"
+REFERENCE_CSV = "https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv"
+
+
+def download_reference_csv() -> bool:
+    """Use Plotly's public AAPL price table when Yahoo blocks an automated runner."""
+    response = requests.get(
+        REFERENCE_CSV,
+        headers={"User-Agent": "Edward-Ocran-portfolio/1.0"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    rows = list(csv.DictReader(io.StringIO(response.text)))
+    cleaned = [
+        {"Date": row["Date"], "Close": row["AAPL.Adjusted"]}
+        for row in rows
+        if row.get("Date") and row.get("AAPL.Adjusted")
+    ]
+    if len(cleaned) < 400:
+        return False
+    DESTINATION.parent.mkdir(exist_ok=True)
+    with DESTINATION.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=["Date", "Close"])
+        writer.writeheader()
+        writer.writerows(cleaned)
+    return True
 
 def ensure_dataset() -> Path:
     if not DESTINATION.exists():
@@ -25,7 +53,9 @@ def ensure_dataset() -> Path:
             if attempt_number < len(attempts):
                 time.sleep(2 * attempt_number)
         if data is None:
-            raise RuntimeError("No AAPL price data was returned after three download attempts")
+            if download_reference_csv():
+                return DESTINATION
+            raise RuntimeError("No AAPL price data was returned from Yahoo or the public reference CSV")
         if data.empty:
             raise RuntimeError("No AAPL price data was returned")
         if getattr(data.columns, "nlevels", 1) > 1:

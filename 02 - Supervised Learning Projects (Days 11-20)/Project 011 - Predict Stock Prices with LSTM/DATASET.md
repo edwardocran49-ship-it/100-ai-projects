@@ -1,7 +1,8 @@
 # Dataset record
 
 - **Name:** AAPL adjusted daily prices
-- **Source:** Yahoo Finance via yfinance
+- **Primary source:** Yahoo Finance via yfinance
+- **Runner fallback:** Plotly's public `finance-charts-apple.csv` AAPL table when Yahoo blocks an automated CI request
 - **Available records:** API download
 - **Retrieved or verified:** 2026-10-03
 - **Provenance/licensing note:** Dynamic market data; not redistributed.

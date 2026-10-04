@@ -15,7 +15,8 @@ def run_demo():
     tf.keras.utils.set_random_seed(42)
     path = ensure_dataset()
     frame = pd.read_csv(path)
-    close = pd.to_numeric(frame["Close"], errors="coerce").dropna().to_numpy(dtype=float)
+    close_column = "Close" if "Close" in frame.columns else "AAPL.Adjusted"
+    close = pd.to_numeric(frame[close_column], errors="coerce").dropna().to_numpy(dtype=float)
     lookback = 60
     raw_x = np.asarray([close[i-lookback:i] for i in range(lookback, len(close))])
     raw_y = close[lookback:]
