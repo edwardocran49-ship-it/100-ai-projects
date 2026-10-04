@@ -1,20 +1,26 @@
-# Analysis Report: Spam Detection with MultinomialNB
+# Spam Detection with MultinomialNB: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 19  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-How effectively does a bag-of-words MultinomialNB model catch SMS spam?
+- Count features produce 98.39% accuracy and 93.84% spam F1, a 7.15-point F1 improvement over the TF-IDF baseline in Project 6.
+- **Senior analyst's read:** Repeated token evidence appears especially useful for this corpus. Because the two projects rely on one split, the comparison is promising rather than conclusive; deduplication and repeated shared folds are needed to isolate representation effects.
+- **Decision:** Advance count features to repeated cross-validation and false-positive review.
 
-## Data used
+## Analytical Question
 
-The same 5,572-message SMS Spam Collection was split with label stratification. This project uses raw counts rather than TF-IDF, making it a useful comparison with Project 6.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-English stop words were removed by `CountVectorizer`, followed by Multinomial Naive Bayes.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -24,14 +30,39 @@ English stop words were removed by `CountVectorizer`, followed by Multinomial Na
 | Accuracy | 98.39% |
 | Spam F1 | 93.84% |
 
-## What the result means
+## Visual Evidence
 
-On this split, count features outperformed the TF-IDF baseline from Project 6, especially on spam F1. The result suggests that repeated token evidence is valuable in this corpus, though the comparison should be confirmed across the same cross-validation folds.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-The corpus is dated and English-only. Random splitting may place near-duplicate campaign wording in both sets, and modern URL or sender signals are not included.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Deduplicate messages, compare both representations under repeated cross-validation, and test on a newer scam corpus.
+## What the Evidence Says
+
+Count features produce 98.39% accuracy and 93.84% spam F1, a 7.15-point F1 improvement over the TF-IDF baseline in Project 6.
+
+Repeated token evidence appears especially useful for this corpus. Because the two projects rely on one split, the comparison is promising rather than conclusive; deduplication and repeated shared folds are needed to isolate representation effects.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Advance count features to repeated cross-validation and false-positive review.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

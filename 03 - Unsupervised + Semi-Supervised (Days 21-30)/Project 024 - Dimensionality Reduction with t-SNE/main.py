@@ -1,55 +1,14 @@
-"""Runnable offline demonstration for Project 24: Dimensionality Reduction with t-SNE.
+from sklearn.datasets import load_digits
+from sklearn.manifold import TSNE
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
+PROJECT_TITLE="Dimensionality Reduction with t-SNE"
+def run_demo():
+    data=load_digits(); X=StandardScaler().fit_transform(data.data); model=TSNE(n_components=2,perplexity=30,init="pca",learning_rate="auto",random_state=42,max_iter=750); embedded=model.fit_transform(X)
+    return {"project":24,"title":PROJECT_TITLE,"author":"Edward Ocran","status":"ok","dataset":"Optical Recognition of Handwritten Digits","records":len(X),"metrics":{"class_silhouette_2d":round(float(silhouette_score(embedded,data.target)),4),"kl_divergence":round(float(model.kl_divergence_),4)}}
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 24
-PROJECT_TITLE = 'Dimensionality Reduction with t-SNE'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def distance(a: list[float], b: list[float]) -> float:
-    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    rows: list[tuple[list[float], int]] = []
-    for label, center in ((0, (-2.0, -1.5)), (1, (2.0, 1.5))):
-        for _ in range(50):
-            rows.append(([rng.gauss(center[0], .65), rng.gauss(center[1], .65)], label))
-    train, test = rows[:80], rows[80:]
-    centroids = []
-    for label in (0, 1):
-        points = [x for x, y in train if y == label]
-        centroids.append([sum(p[i] for p in points) / len(points) for i in range(2)])
-    predicted = [min((distance(x, c), label) for label, c in enumerate(centroids))[1] for x, _ in test]
-    accuracy = sum(int(p == y) for p, (_, y) in zip(predicted, test)) / len(test)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "classification", "metrics": {"accuracy": round(accuracy, 4)},
-            "sample_prediction": predicted[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    import argparse, json
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args()
+    result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

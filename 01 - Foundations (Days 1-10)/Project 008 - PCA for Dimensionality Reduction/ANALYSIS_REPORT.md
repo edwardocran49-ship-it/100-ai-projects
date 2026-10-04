@@ -1,20 +1,26 @@
-# Analysis Report: PCA for Dimensionality Reduction
+# PCA for Dimensionality Reduction: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 8  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-How much of the digits dataset can two principal components preserve?
+- A two-component map retains only 21.59% of standardized variance, so it is a visualization—not a faithful replacement for the 64-pixel feature space.
+- **Senior analyst's read:** The compression is intentionally severe: 62 dimensions are removed. Any apparent class overlap in the chart may be a projection artifact, while apparent separation does not prove a two-dimensional classifier will preserve full-space performance.
+- **Decision:** Use the projection for exploration and measure downstream accuracy across a component-count curve.
 
-## Data used
+## Analytical Question
 
-All 1,797 digit images were standardized across their 64 pixel features before PCA.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-PCA reduced the standardized vectors from 64 dimensions to two. The retained variance ratio is the key diagnostic.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -25,14 +31,39 @@ PCA reduced the standardized vectors from 64 dimensions to two. The retained var
 | Output dimensions | 2 |
 | Variance retained | 21.59% |
 
-## What the result means
+## Visual Evidence
 
-Two components retain only about one fifth of the standardized variance. The projection is suitable for visualization, but it discards too much information to replace the full feature set in a high-accuracy recognizer.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-Variance is not the same as class separation, and linear PCA cannot unfold nonlinear structure. The current run does not compare downstream classifier accuracy before and after reduction.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Plot the two-dimensional embedding by digit, compare with t-SNE, and measure classification accuracy across several component counts.
+## What the Evidence Says
+
+A two-component map retains only 21.59% of standardized variance, so it is a visualization—not a faithful replacement for the 64-pixel feature space.
+
+The compression is intentionally severe: 62 dimensions are removed. Any apparent class overlap in the chart may be a projection artifact, while apparent separation does not prove a two-dimensional classifier will preserve full-space performance.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Use the projection for exploration and measure downstream accuracy across a component-count curve.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

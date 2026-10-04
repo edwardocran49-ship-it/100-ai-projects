@@ -1,33 +1,20 @@
 # Project 26: Semi-Supervised Learning for Document Labeling
 
 **Author:** Edward Ocran  
-**Category:** 03 - Unsupervised + Semi-Supervised (Days 21-30)  
-**Implementation type:** Classification
+**Category:** 03 - Unsupervised + Semi-Supervised (Days 21-30)
 
 ## Objective
 
-Build a text classifier that learns from a small amount of labeled documents and
+Run the named method on the documented dataset and report a measurable result.
 
-## What is included
+## Data and analysis
 
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+See [DATASET.md](DATASET.md) for provenance and [ANALYSIS_REPORT.md](ANALYSIS_REPORT.md) for findings after validation.
 
 ## Run
 
 ```powershell
+python -m pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
-
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install pandas scikit-learn matplotlib seaborn`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.

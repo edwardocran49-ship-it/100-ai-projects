@@ -1,54 +1,17 @@
-"""Runnable offline demonstration for Project 29: Hierarchical Clustering on E-commerce Data.
+import pandas as pd
+from scipy.cluster.hierarchy import fcluster,linkage
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
+from download_data import ensure_dataset
+PROJECT_TITLE="Hierarchical Clustering on E-commerce Data"
+def run_demo():
+    df=pd.read_csv(ensure_dataset(),encoding="latin-1").dropna(subset=["CustomerID"]); df=df[(df.Quantity>0)&(df.UnitPrice>0)]; df["sales"]=df.Quantity*df.UnitPrice; df["InvoiceDate"]=pd.to_datetime(df.InvoiceDate)
+    customers=df.groupby("CustomerID").agg(total_spent=("sales","sum"),purchase_frequency=("InvoiceNo","nunique"),avg_cart_value=("sales","mean"),last_purchase=("InvoiceDate","max")); customers["recency_days"]=(df.InvoiceDate.max()-customers.pop("last_purchase")).dt.days; customers=customers.sort_values("total_spent",ascending=False).head(2000)
+    X=StandardScaler().fit_transform(customers); Z=linkage(X,method="ward"); labels=fcluster(Z,t=5,criterion="maxclust")
+    return {"project":29,"title":PROJECT_TITLE,"author":"Edward Ocran","status":"ok","dataset":"UCI Online Retail transactions","records":len(customers),"clusters":5,"metrics":{"silhouette":round(float(silhouette_score(X,labels)),4)}}
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 29
-PROJECT_TITLE = 'Hierarchical Clustering on E-commerce Data'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def squared_distance(a: list[float], b: list[float]) -> float:
-    return sum((x - y) ** 2 for x, y in zip(a, b))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    points = []
-    for cx, cy in ((-4, -3), (0, 4), (4, -2)):
-        points.extend([[rng.gauss(cx, .55), rng.gauss(cy, .55)] for _ in range(30)])
-    centers = [points[0], points[30], points[60]]
-    labels = [0] * len(points)
-    for _ in range(12):
-        labels = [min(range(3), key=lambda i: squared_distance(point, centers[i])) for point in points]
-        centers = [[sum(points[j][axis] for j, label in enumerate(labels) if label == i) /
-                    sum(label == i for label in labels) for axis in range(2)] for i in range(3)]
-    inertia = sum(squared_distance(point, centers[label]) for point, label in zip(points, labels))
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "clustering", "metrics": {"clusters": 3, "inertia": round(inertia, 4)},
-            "sample_prediction": labels[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    import argparse, json
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args()
+    result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

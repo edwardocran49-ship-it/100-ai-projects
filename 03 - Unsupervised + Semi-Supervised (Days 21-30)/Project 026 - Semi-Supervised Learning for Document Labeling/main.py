@@ -1,55 +1,17 @@
-"""Runnable offline demonstration for Project 26: Semi-Supervised Learning for Document Labeling.
+import numpy as np, pandas as pd
+from sklearn.decomposition import TruncatedSVD
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score
+from sklearn.semi_supervised import LabelSpreading
+from download_data import ensure_dataset
+PROJECT_TITLE="Semi-Supervised Learning for Document Labeling"
+def run_demo():
+    df=pd.read_csv(ensure_dataset(),nrows=4000); truth=(df.sentiment=="positive").astype(int).to_numpy(); vectors=TfidfVectorizer(max_features=5000,stop_words="english").fit_transform(df.review); X=TruncatedSVD(50,random_state=42).fit_transform(vectors)
+    rng=np.random.default_rng(42); labeled=rng.choice(len(df),size=400,replace=False); y=np.full(len(df),-1); y[labeled]=truth[labeled]; model=LabelSpreading(kernel="knn",n_neighbors=15,max_iter=30).fit(X,y); mask=y==-1
+    return {"project":26,"title":PROJECT_TITLE,"author":"Edward Ocran","status":"ok","dataset":"IMDb 50K Movie Reviews","records":len(df),"labeled_records":len(labeled),"metrics":{"unlabeled_accuracy":round(float(accuracy_score(truth[mask],model.transduction_[mask])),4)}}
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 26
-PROJECT_TITLE = 'Semi-Supervised Learning for Document Labeling'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def distance(a: list[float], b: list[float]) -> float:
-    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    rows: list[tuple[list[float], int]] = []
-    for label, center in ((0, (-2.0, -1.5)), (1, (2.0, 1.5))):
-        for _ in range(50):
-            rows.append(([rng.gauss(center[0], .65), rng.gauss(center[1], .65)], label))
-    train, test = rows[:80], rows[80:]
-    centroids = []
-    for label in (0, 1):
-        points = [x for x, y in train if y == label]
-        centroids.append([sum(p[i] for p in points) / len(points) for i in range(2)])
-    predicted = [min((distance(x, c), label) for label, c in enumerate(centroids))[1] for x, _ in test]
-    accuracy = sum(int(p == y) for p, (_, y) in zip(predicted, test)) / len(test)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "classification", "metrics": {"accuracy": round(accuracy, 4)},
-            "sample_prediction": predicted[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    import argparse, json
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args()
+    result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

@@ -1,54 +1,20 @@
-"""Runnable offline demonstration for Project 30: Build a User-Based Recommender System.
+import numpy as np,pandas as pd
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics.pairwise import cosine_similarity
+from download_data import ensure_dataset
+PROJECT_TITLE="Build a User-Based Recommender System"
+def run_demo():
+    ratings=pd.read_csv(ensure_dataset()); test=ratings.sort_values("timestamp").groupby("userId").tail(1); train=ratings.drop(test.index); matrix=train.pivot(index="userId",columns="movieId",values="rating").fillna(0); similarity=cosine_similarity(matrix); users=list(matrix.index); position={u:i for i,u in enumerate(users)}; predictions=[]; actual=[]
+    global_mean=float(train.rating.mean())
+    for row in test.itertuples():
+        if row.movieId not in matrix.columns: pred=global_mean
+        else:
+            scores=similarity[position[row.userId]].copy(); scores[position[row.userId]]=0; item=matrix[row.movieId].to_numpy(); mask=item>0; pred=float(np.dot(scores[mask],item[mask])/scores[mask].sum()) if scores[mask].sum()>0 else global_mean
+        predictions.append(np.clip(pred,0.5,5)); actual.append(row.rating)
+    return {"project":30,"title":PROJECT_TITLE,"author":"Edward Ocran","status":"ok","dataset":"MovieLens latest-small ratings","records":len(ratings),"users":len(users),"metrics":{"leave_one_out_rmse":round(float(mean_squared_error(actual,predictions)**0.5),4)}}
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 30
-PROJECT_TITLE = 'Build a User-Based Recommender System'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def squared_distance(a: list[float], b: list[float]) -> float:
-    return sum((x - y) ** 2 for x, y in zip(a, b))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    points = []
-    for cx, cy in ((-4, -3), (0, 4), (4, -2)):
-        points.extend([[rng.gauss(cx, .55), rng.gauss(cy, .55)] for _ in range(30)])
-    centers = [points[0], points[30], points[60]]
-    labels = [0] * len(points)
-    for _ in range(12):
-        labels = [min(range(3), key=lambda i: squared_distance(point, centers[i])) for point in points]
-        centers = [[sum(points[j][axis] for j, label in enumerate(labels) if label == i) /
-                    sum(label == i for label in labels) for axis in range(2)] for i in range(3)]
-    inertia = sum(squared_distance(point, centers[label]) for point, label in zip(points, labels))
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "clustering", "metrics": {"clusters": 3, "inertia": round(inertia, 4)},
-            "sample_prediction": labels[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    import argparse, json
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args()
+    result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

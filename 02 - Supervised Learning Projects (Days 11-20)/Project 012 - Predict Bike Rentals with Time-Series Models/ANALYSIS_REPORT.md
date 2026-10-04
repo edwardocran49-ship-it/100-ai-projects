@@ -1,20 +1,26 @@
-# Analysis Report: Predict Bike Rentals with Time-Series Models
+# Predict Bike Rentals with Time-Series Models: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 12  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-How accurately can recent demand and calendar/weather features forecast hourly bike rentals?
+- The model’s average hourly miss is 29.69 rentals across 17.2k chronologically ordered observations.
+- **Senior analyst's read:** The same absolute miss has different operational meaning by demand level: thirty bikes can be negligible during a rush-hour peak and material overnight. Segmenting error by hour, season, and demand band will expose where rebalancing decisions are most vulnerable.
+- **Decision:** Evaluate against seasonal-naive forecasts and report error by operating regime.
 
-## Data used
+## Analytical Question
 
-After creating 1-hour, 24-hour, and 168-hour lags, 17,211 Washington D.C. hourly observations remained. The last 20% of time was held out without shuffling.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-A histogram gradient-boosting regressor used calendar fields, normalized weather measures, and the three demand lags.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -23,14 +29,39 @@ A histogram gradient-boosting regressor used calendar fields, normalized weather
 | Modeled hours | 17,211 |
 | Holdout MAE | 29.6857 rentals |
 
-## What the result means
+## Visual Evidence
 
-The forecast is off by about thirty rentals in an average hour. The lag features carry substantial short- and weekly-cycle information, but the error should be read against hour-specific demand because thirty rentals is minor at rush hour and large overnight.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-The data covers one city and two years. A single cutoff does not show seasonal stability, and the current metric weights quiet and busy hours equally.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Report MAE by hour and season, compare against seasonal-naive forecasts, and use rolling-origin evaluation.
+## What the Evidence Says
+
+The model’s average hourly miss is 29.69 rentals across 17.2k chronologically ordered observations.
+
+The same absolute miss has different operational meaning by demand level: thirty bikes can be negligible during a rush-hour peak and material overnight. Segmenting error by hour, season, and demand band will expose where rebalancing decisions are most vulnerable.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Evaluate against seasonal-naive forecasts and report error by operating regime.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

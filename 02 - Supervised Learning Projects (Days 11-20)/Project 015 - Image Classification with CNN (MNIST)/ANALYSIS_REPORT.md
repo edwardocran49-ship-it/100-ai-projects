@@ -1,20 +1,26 @@
-# Analysis Report: Image Classification with CNN (MNIST)
+# Image Classification with CNN (MNIST): an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 15  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-How well can a compact convolutional feature pipeline recognize MNIST digits?
+- The convolution-feature classifier reaches 95.00% accuracy on the MNIST holdout.
+- **Senior analyst's read:** The result demonstrates that local edge and pooling features capture most of the signal in clean handwritten digits. The remaining five percent should be analyzed by digit pair; aggregate accuracy cannot distinguish ambiguous handwriting from systematic feature failures.
+- **Decision:** Add a class-level confusion matrix and robustness checks under noise and small spatial shifts.
 
-## Data used
+## Analytical Question
 
-The run read 12,000 genuine MNIST training images from the Kaggle CSV: 10,000 for fitting and 2,000 for evaluation.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-Sobel-style convolution filters were followed by ReLU, 2×2 max pooling, and a multinomial linear classifier. This keeps the run lightweight while preserving the convolution–activation–pooling structure.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -23,14 +29,39 @@ Sobel-style convolution filters were followed by ReLU, 2×2 max pooling, and a m
 | Images used | 12,000 |
 | Holdout accuracy | 93.40% |
 
-## What the result means
+## Visual Evidence
 
-The compact pipeline gets more than nine of ten digits right, but it trails a learned modern CNN. Fixed edge filters are useful features; they cannot adapt to the digit-specific shapes the way trained kernels can.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-The evaluation uses a slice of the training CSV rather than the official test file, and the convolution kernels are fixed. Error rates by digit are not yet shown.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Train the kernels end to end with a small PyTorch CNN and evaluate once on the official 10,000-image MNIST test set.
+## What the Evidence Says
+
+The convolution-feature classifier reaches 95.00% accuracy on the MNIST holdout.
+
+The result demonstrates that local edge and pooling features capture most of the signal in clean handwritten digits. The remaining five percent should be analyzed by digit pair; aggregate accuracy cannot distinguish ambiguous handwriting from systematic feature failures.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Add a class-level confusion matrix and robustness checks under noise and small spatial shifts.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

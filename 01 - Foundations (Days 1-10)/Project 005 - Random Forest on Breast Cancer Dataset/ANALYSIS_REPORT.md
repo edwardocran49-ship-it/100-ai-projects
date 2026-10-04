@@ -1,20 +1,26 @@
-# Analysis Report: Random Forest on Breast Cancer Dataset
+# Random Forest on Breast Cancer Dataset: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 5  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-How accurately can a random forest classify the Wisconsin diagnostic measurements?
+- The forest reaches 95.61% accuracy, roughly 32.9 percentage points above the majority-class baseline.
+- **Senior analyst's read:** The margin over baseline is substantial and supports the value of the diagnostic measurements. For screening, however, the decisive metric is malignant-case sensitivity; a small number of false negatives can matter more than many correct benign classifications.
+- **Decision:** Move next to sensitivity, specificity, calibration, and external-cohort validation.
 
-## Data used
+## Analytical Question
 
-The built-in scikit-learn copy contains 569 observations with thirty numeric features. The split was stratified to preserve the malignant/benign balance.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-A 150-tree random forest was trained with a fixed seed and evaluated on a 20% holdout.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -23,14 +29,39 @@ A 150-tree random forest was trained with a fixed seed and evaluated on a 20% ho
 | Samples | 569 |
 | Holdout accuracy | 95.61% |
 
-## What the result means
+## Visual Evidence
 
-The model correctly classified roughly 96% of the holdout set, which is strong for a compact baseline. A medical screening context would still care more about malignant-case recall than overall accuracy.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-The sample is small, comes from one historical source, and the current report does not include sensitivity, specificity, calibration, or external validation. It is not a diagnostic device.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Add a confusion matrix and ROC curve, tune the threshold for malignant recall, and validate on an independent cohort.
+## What the Evidence Says
+
+The forest reaches 95.61% accuracy, roughly 32.9 percentage points above the majority-class baseline.
+
+The margin over baseline is substantial and supports the value of the diagnostic measurements. For screening, however, the decisive metric is malignant-case sensitivity; a small number of false negatives can matter more than many correct benign classifications.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Move next to sensitivity, specificity, calibration, and external-cohort validation.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

@@ -6,3 +6,4 @@ scipy>=1.14,<2
 statsmodels>=0.14,<1
 xgboost>=3,<4
 yfinance>=1,<2
+matplotlib>=3.10,<4

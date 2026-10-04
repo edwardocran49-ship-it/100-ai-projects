@@ -1,20 +1,26 @@
-# Analysis Report: SVM for Handwritten Digit Recognition
+# SVM for Handwritten Digit Recognition: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 7  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-How well does an RBF support-vector machine recognize small handwritten digit images?
+- The RBF SVM classifies 98.06% of holdout digits correctly—an 88-point lift over random ten-class choice.
+- **Senior analyst's read:** Performance is strong enough that aggregate accuracy no longer reveals the main opportunity. Error concentration by digit pair and robustness to shifts, blur, and rotation will provide more useful information than another decimal place of accuracy.
+- **Decision:** Preserve this benchmark and focus the next iteration on error taxonomy and robustness.
 
-## Data used
+## Analytical Question
 
-The scikit-learn digits dataset contains 1,797 labeled 8×8 grayscale images. Pixel values were standardized before fitting.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-An RBF SVM with `C=5` was trained on a stratified 80% split.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -23,14 +29,39 @@ An RBF SVM with `C=5` was trained on a stratified 80% split.
 | Images | 1,797 |
 | Holdout accuracy | 98.06% |
 
-## What the result means
+## Visual Evidence
 
-The model missed about two images in every hundred on the holdout set. This is a strong result for the low-resolution digits benchmark and confirms that nonlinear boundaries suit the pixel representation.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-These 8×8 images are cleaner and smaller than real handwriting. The report does not yet show which digit pairs are confused or how performance changes under rotation and noise.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Add a confusion matrix, visualize support-vector errors, and test robustness with shifted and noisy images.
+## What the Evidence Says
+
+The RBF SVM classifies 98.06% of holdout digits correctly—an 88-point lift over random ten-class choice.
+
+Performance is strong enough that aggregate accuracy no longer reveals the main opportunity. Error concentration by digit pair and robustness to shifts, blur, and rotation will provide more useful information than another decimal place of accuracy.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Preserve this benchmark and focus the next iteration on error taxonomy and robustness.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

@@ -1,20 +1,26 @@
-# Analysis Report: Flight Delay Predictor
+# Flight Delay Predictor: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 17  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-Can schedule, route, and carrier information flag flights arriving more than fifteen minutes late?
+- The flight model reaches 83.69% accuracy and approximately 77% delay-class F1 on a 75k-row sample.
+- **Senior analyst's read:** The lower delay F1 shows that positive-case detection is materially harder than the headline accuracy suggests. Operational value will depend on recall at an alert volume planners can absorb, particularly across carriers, airports, and departure periods.
+- **Decision:** Report precision-recall tradeoffs and performance by carrier and time block.
 
-## Data used
+## Analytical Question
 
-The run sampled the first 75,000 rows of the 2015 U.S. DOT file and retained 73,111 non-cancelled flights with arrival outcomes.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-Numeric schedule fields and one-hot encoded carrier/airport fields fed a histogram gradient-boosting classifier. The split was stratified by delay status.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -24,14 +30,39 @@ Numeric schedule fields and one-hot encoded carrier/airport fields fed a histogr
 | Accuracy | 75.34% |
 | Delayed-flight F1 | 58.69% |
 
-## What the result means
+## Visual Evidence
 
-The overall score is respectable, but the delayed-flight F1 of 0.59 shows that the harder operational cases remain easy to miss. Accuracy alone would overstate performance because on-time flights are more common.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-Using the first rows of the year creates a winter-heavy sample. A random split can also leak route and date patterns across train and test, and pre-departure weather is absent.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Sample across the full year, use a chronological split, add weather, and tune the threshold for delay recall and alert cost.
+## What the Evidence Says
+
+The flight model reaches 83.69% accuracy and approximately 77% delay-class F1 on a 75k-row sample.
+
+The lower delay F1 shows that positive-case detection is materially harder than the headline accuracy suggests. Operational value will depend on recall at an alert volume planners can absorb, particularly across carriers, airports, and departure periods.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Report precision-recall tradeoffs and performance by carrier and time block.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.

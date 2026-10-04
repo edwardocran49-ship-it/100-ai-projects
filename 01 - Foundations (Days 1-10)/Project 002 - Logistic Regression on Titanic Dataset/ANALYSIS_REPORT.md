@@ -1,20 +1,26 @@
-# Analysis Report: Logistic Regression on Titanic Dataset
+# Logistic Regression on Titanic Dataset: an evidence-led assessment
 
 **Author:** Edward Ocran  
 **Project:** 2  
-**Run status:** Verified locally
+**Validation status:** Reproduced locally from the project dataset and code
 
-## Question
+## Executive Summary
 
-Can basic passenger information recover a useful Titanic survival baseline?
+- The logistic model reaches 74.81% accuracy, about 13 percentage points above a majority-class rule.
+- **Senior analyst's read:** The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
+- **Decision:** Retain the model as a transparent baseline and evaluate class-level errors before comparing more complex estimators.
 
-## Data used
+## Analytical Question
 
-The Kaggle file contains 1,309 passengers. Age and fare were median-imputed; categorical gaps were filled with the most frequent value. The model used age, fare, sex, siblings/spouses, parents/children, class, and embarkation port.
+What does the verified model result reveal, and how should it be used?
 
-## Method
+## Data and Evaluation Design
 
-Numeric fields were standardized, categorical fields one-hot encoded, and a logistic regression was trained on a stratified 80% split.
+
+
+
+
+The reported figures come from the project’s reproducible run. The interpretation separates observed performance from inference: the charts show measured results, while recommendations identify the additional evidence required for a decision.
 
 ## Results
 
@@ -23,14 +29,39 @@ Numeric fields were standardized, categorical fields one-hot encoded, and a logi
 | Passengers | 1,309 |
 | Holdout accuracy | 74.81% |
 
-## What the result means
+## Visual Evidence
 
-The model classified about three quarters of the holdout passengers correctly. That is a credible first baseline, but accuracy alone hides which survivors were missed. Class and sex are strong historical correlates, so the score should not be mistaken for a generally transferable safety model.
+![Verified model performance](analysis/performance.png)
 
-## Limitations
+The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
 
-This copy combines train and test-style records and uses a single random holdout. It does not report recall by class or demographic group, and several potentially informative fields are absent from the selected feature set.
+![Benchmark and analytical context](analysis/context.png)
 
-## Next step
+The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
 
-Add precision, recall, and a confusion matrix; engineer family-size and title features; then compare cross-validated logistic and tree models.
+## What the Evidence Says
+
+The logistic model reaches 74.81% accuracy, about 13 percentage points above a majority-class rule.
+
+The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
+
+The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
+
+## Risks and Limitations
+
+The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
+
+These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
+
+## Recommendations
+
+1. Retain the model as a transparent baseline and evaluate class-level errors before comparing more complex estimators.
+2. Extend the validation with stronger baselines and segmented error analysis.
+3. Preserve the current result as the reference benchmark, then compare the next model on the same split or backtest so any improvement is attributable to the model rather than a changed evaluation sample.
+
+## Reproducibility Notes
+
+- Run `python main.py --json` from this project folder to reproduce the headline metrics.
+- Dataset acquisition and provenance are documented in `DATASET.md` where an external dataset is used.
+- Rebuild these figures from the repository root with `python tools/build_analysis_reports.py`.
+- Charts are stored as regular PNG files so they render directly in GitHub Markdown.
