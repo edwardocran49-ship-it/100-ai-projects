@@ -1,4 +1,5 @@
 __pycache__/
+tmp*/
 *.py[cod]
 .venv/
 .env
@@ -8,6 +9,7 @@ models/
 .validation_audio/
 07 - Speech and Audio (Days 61-70)/**/data/
 08 - Healthcare + Finance + Retail (Days 71-80)/**/data/
+10 - Advanced, Experimental, and Ethics (Days 91-100)/**/data/
 .models/
 *.wav
 transcript.txt

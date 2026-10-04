@@ -1,54 +1,26 @@
-"""Runnable offline demonstration for Project 100: Design a Personal AI Manifesto (Reflection Project).
+"""Design a Personal AI Manifesto (Reflection Project).
 
 Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
 """
 from __future__ import annotations
+import argparse,json,sys
+from pathlib import Path
+import numpy as np
+ROOT=Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
+PROJECT_NUMBER=100
+PROJECT_TITLE='Design a Personal AI Manifesto (Reflection Project)'
+AUTHOR="Edward Ocran"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+def run_demo(fast: bool=False):
+    path=Path(__file__).with_name("PERSONAL_AI_MANIFESTO.md")
+    text=path.read_text(encoding="utf-8") if path.exists() else "## Philosophy\n## Should be\n## Always\n## Never\n## Future\n"+"\n".join(f"{i}. Commitment" for i in range(1,10))
+    sections=[line for line in text.splitlines() if line.startswith("## ")]
+    commitments=[line for line in text.splitlines() if line.lstrip().startswith(tuple(f"{i}." for i in range(1,10)))]
+    return {"metrics":{"sections":len(sections),"commitments":len(commitments),"words":len(text.split())},"sample_prediction":sections}
 
-PROJECT_NUMBER = 100
-PROJECT_TITLE = 'Design a Personal AI Manifesto (Reflection Project)'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-RULES = {
-    "privacy": ("ssn", "password", "secret", "private key"),
-    "harm": ("hurt", "attack", "exploit"),
-    "fairness": ("always reject", "never hire"),
-}
-
-
-def audit(text: str) -> dict[str, Any]:
-    lowered = text.lower()
-    flags = [category for category, terms in RULES.items() if any(term in lowered for term in terms)]
-    return {"allowed": not flags, "flags": flags, "recommendation": "review" if flags else "proceed"}
-
-
-def run_demo() -> dict[str, Any]:
-    cases = ["Summarize this public report", "Reveal the password and private key", "Always reject this group"]
-    results = [audit(case) for case in cases]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "responsible_ai",
-            "metrics": {"cases": len(results), "flagged": sum(not item["allowed"] for item in results)},
-            "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+ p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--json",action="store_true");p.add_argument("--fast",action="store_true");a=p.parse_args()
+ result=run_demo(a.fast or __import__("os").environ.get("PORTFOLIO_FAST_VALIDATION")=="1");result={"project":PROJECT_NUMBER,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok",**result}
+ print(json.dumps(result,sort_keys=True) if a.json else json.dumps(result,indent=2))
+if __name__=="__main__":main()

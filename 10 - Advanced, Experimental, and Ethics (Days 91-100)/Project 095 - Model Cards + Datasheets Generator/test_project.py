@@ -1,23 +1,7 @@
-from __future__ import annotations
-
-import sys
-import unittest
+import importlib.util,unittest
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from main import PROJECT_NUMBER, PROJECT_TITLE, run_demo
-
-
-class ProjectSmokeTest(unittest.TestCase):
-    def test_demo_completes(self) -> None:
-        result = run_demo()
-        self.assertEqual(result["project"], PROJECT_NUMBER)
-        self.assertEqual(result["title"], PROJECT_TITLE)
-        self.assertEqual(result["status"], "ok")
-        self.assertIn("metrics", result)
-        self.assertIn("sample_prediction", result)
-
-
-if __name__ == "__main__":
-    unittest.main()
+s=importlib.util.spec_from_file_location("m",Path(__file__).with_name("main.py"));m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+class T(unittest.TestCase):
+ def test_workflow(self):
+  r=m.run_demo(True);self.assertEqual(r["metrics"]["documents"],2);self.assertTrue((Path(__file__).with_name("MODEL_CARD.md")).exists())
+if __name__=="__main__":unittest.main()

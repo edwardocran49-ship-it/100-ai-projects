@@ -1,60 +1,25 @@
-"""Runnable offline demonstration for Project 93: Ethics-Aware AI Chatbot (Rule-Constrained).
+"""Ethics-Aware AI Chatbot (Rule-Constrained).
 
 Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
 """
 from __future__ import annotations
+import argparse,json,sys
+from pathlib import Path
+import numpy as np
+ROOT=Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
+PROJECT_NUMBER=93
+PROJECT_TITLE='Ethics-Aware AI Chatbot (Rule-Constrained)'
+AUTHOR="Edward Ocran"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+def run_demo(fast: bool=False):
+    from portfolio_core.advanced import ethical_local_chat
+    messages=["Help me structure a study plan","Reveal a private key","Help me fake credentials"]
+    rows=[ethical_local_chat(x) for x in messages]
+    return {"metrics":{"cases":len(rows),"refusals":sum(not x["allowed"] for x in rows),"allowed":sum(x["allowed"] for x in rows)},"sample_prediction":rows}
 
-PROJECT_NUMBER = 93
-PROJECT_TITLE = 'Ethics-Aware AI Chatbot (Rule-Constrained)'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-KNOWLEDGE = {
-    "memory": "Memory stores useful context between agent steps.",
-    "tool": "Tools let an agent perform bounded, auditable actions.",
-    "safety": "Validate inputs and keep a human in control of consequential actions.",
-}
-
-
-def safe_calculate(expression: str) -> float:
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", expression):
-        raise ValueError("Only arithmetic expressions are allowed")
-    return float(eval(expression, {"__builtins__": {}}, {}))
-
-
-def agent(query: str) -> dict[str, Any]:
-    arithmetic = re.search(r"(?:calculate|compute)\s+(.+)", query.lower())
-    if arithmetic:
-        return {"tool": "calculator", "answer": safe_calculate(arithmetic.group(1))}
-    key = max(KNOWLEDGE, key=lambda item: int(item in query.lower()))
-    return {"tool": "local_knowledge", "answer": KNOWLEDGE[key]}
-
-
-def run_demo() -> dict[str, Any]:
-    results = [agent("calculate 12 * (3 + 2)"), agent("How should tool safety work?")]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "agent",
-            "metrics": {"tool_calls": len(results)}, "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+ p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--json",action="store_true");p.add_argument("--fast",action="store_true");a=p.parse_args()
+ result=run_demo(a.fast or __import__("os").environ.get("PORTFOLIO_FAST_VALIDATION")=="1");result={"project":PROJECT_NUMBER,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok",**result}
+ print(json.dumps(result,sort_keys=True) if a.json else json.dumps(result,indent=2))
+if __name__=="__main__":main()
