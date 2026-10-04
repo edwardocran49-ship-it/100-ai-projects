@@ -1,55 +1,19 @@
-"""Runnable offline demonstration for Project 80: Doctor-Patient Conversational AI.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 80
-PROJECT_TITLE = 'Doctor-Patient Conversational AI'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def distance(a: list[float], b: list[float]) -> float:
-    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    rows: list[tuple[list[float], int]] = []
-    for label, center in ((0, (-2.0, -1.5)), (1, (2.0, 1.5))):
-        for _ in range(50):
-            rows.append(([rng.gauss(center[0], .65), rng.gauss(center[1], .65)], label))
-    train, test = rows[:80], rows[80:]
-    centroids = []
-    for label in (0, 1):
-        points = [x for x, y in train if y == label]
-        centroids.append([sum(p[i] for p in points) / len(points) for i in range(2)])
-    predicted = [min((distance(x, c), label) for label, c in enumerate(centroids))[1] for x, _ in test]
-    accuracy = sum(int(p == y) for p, (_, y) in zip(predicted, test)) / len(test)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "classification", "metrics": {"accuracy": round(accuracy, 4)},
-            "sample_prediction": predicted[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+"""Stateful symptom-intake dialogue with red-flag escalation and hand-off summary."""
+import argparse,json,os
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=80,"Doctor-Patient Conversational Assistant","Edward Ocran"
+class Intake:
+ def __init__(self):self.turns=[];self.duration=None;self.symptoms=[];self.red_flags=[]
+ def respond(self,text):
+  self.turns.append(("patient",text));low=text.lower();self.red_flags += [x for x in ("chest pain","shortness of breath","fainting") if x in low and x not in self.red_flags]
+  for x in ("fever","sore throat","cough","headache"):
+   if x in low and x not in self.symptoms:self.symptoms.append(x)
+  if self.red_flags:reply="These symptoms need urgent in-person assessment now."
+  elif self.duration is None:reply="How long have these symptoms been present?"
+  else:reply="Have they worsened, and are you able to drink fluids normally?"
+  self.turns.append(("assistant",reply));return reply
+ def summary(self):return {"symptoms":self.symptoms,"red_flags":self.red_flags,"turns":len(self.turns),"handoff":f"Patient reports {', '.join(self.symptoms) or 'unspecified symptoms'}."}
+def run_demo(fast=None):
+ s=Intake();s.respond("I have had a sore throat, fever and dry cough");s.duration="3 days";s.respond("It has been three days and is not getting worse");summary=s.summary();return {"project":80,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","summary":summary,"metrics":{"patient_turns":2,"symptoms":len(summary["symptoms"]),"red_flags":len(summary["red_flags"])},"disclaimer":"Intake support only; not medical advice."}
+def main():
+ p=argparse.ArgumentParser();p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(),indent=None if a.json else 2))
+if __name__=="__main__":main()

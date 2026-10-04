@@ -1,55 +1,17 @@
-"""Runnable offline demonstration for Project 73: Drug Similarity Finder.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 73
-PROJECT_TITLE = 'Drug Similarity Finder'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def distance(a: list[float], b: list[float]) -> float:
-    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    rows: list[tuple[list[float], int]] = []
-    for label, center in ((0, (-2.0, -1.5)), (1, (2.0, 1.5))):
-        for _ in range(50):
-            rows.append(([rng.gauss(center[0], .65), rng.gauss(center[1], .65)], label))
-    train, test = rows[:80], rows[80:]
-    centroids = []
-    for label in (0, 1):
-        points = [x for x, y in train if y == label]
-        centroids.append([sum(p[i] for p in points) / len(points) for i in range(2)])
-    predicted = [min((distance(x, c), label) for label, c in enumerate(centroids))[1] for x, _ in test]
-    accuracy = sum(int(p == y) for p, (_, y) in zip(predicted, test)) / len(test)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "classification", "metrics": {"accuracy": round(accuracy, 4)},
-            "sample_prediction": predicted[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+"""Rank medicines by Morgan-fingerprint Tanimoto similarity."""
+import argparse,csv,json,os
+from pathlib import Path
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=73,"Drug Similarity Finder","Edward Ocran"
+DEFAULT={"Aspirin":"CC(=O)OC1=CC=CC=C1C(=O)O","Ibuprofen":"CC(C)CC1=CC=C(C=C1)C(C)C(=O)O","Acetaminophen":"CC(=O)NC1=CC=C(O)C=C1","Naproxen":"COC1=CC=CC2=C1C=C(C=C2)C(C)C(=O)O","Diclofenac":"OC(=O)CC1=CC=CC=C1NC2=C(Cl)C=CC=C2Cl"}
+def rank(smiles,records):
+ from rdkit import Chem,DataStructs
+ from rdkit.Chem import rdFingerprintGenerator
+ gen=rdFingerprintGenerator.GetMorganGenerator(radius=2,fpSize=2048);query=gen.GetFingerprint(Chem.MolFromSmiles(smiles));out=[]
+ for name,s in records.items():out.append({"drug":name,"similarity":round(DataStructs.TanimotoSimilarity(query,gen.GetFingerprint(Chem.MolFromSmiles(s))),4)})
+ return sorted(out,key=lambda x:x["similarity"],reverse=True)
+def run_demo(fast=None,data=None):
+ records=DEFAULT if data is None else {r["drug"]:r["smiles"] for r in csv.DictReader(open(data,encoding="utf-8"))};results=rank(DEFAULT["Acetaminophen"],records)
+ return {"project":73,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","query":"Acetaminophen","results":results,"metrics":{"compounds":len(records),"exact_match":results[0]["similarity"],"next_similarity":results[1]["similarity"]}}
+def main():
+ p=argparse.ArgumentParser();p.add_argument("--data",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(data=a.data),indent=None if a.json else 2))
+if __name__=="__main__":main()

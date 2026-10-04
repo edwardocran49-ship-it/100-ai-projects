@@ -1,53 +1,20 @@
-"""Runnable offline demonstration for Project 78: Visual Price Tag Detection for Retail.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 78
-PROJECT_TITLE = 'Visual Price Tag Detection for Retail'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+"""Locate price-like OCR results and return boxes with normalized values."""
+import argparse,json,os,re
+from pathlib import Path
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=78,"Visual Price Tag Detection for Retail","Edward Ocran"
+PRICE=re.compile(r"(?:[$€£]\s*)?\d{1,4}[.,]\d{2}")
+def filter_prices(results):
+ out=[]
+ for box,text,confidence in results:
+  match=PRICE.search(text.replace(" ",""))
+  if match:out.append({"text":match.group().replace(",","."),"confidence":round(float(confidence),3),"box":[[int(v) for v in point] for point in box]})
+ return out
+def detect(path):
+ import easyocr
+ return filter_prices([(b,t,c) for b,t,c in easyocr.Reader(["en"]).readtext(str(path))])
+def run_demo(fast=None,image=None):
+ mock=[([[10,10],[90,10],[90,40],[10,40]],"$3.49",.94),([[100,10],[180,10],[180,40],[100,40]],"7.99",.89),([[0,0],[1,0],[1,1],[0,1]],"SALE",.98)] if os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" or fast else None;found=filter_prices(mock) if mock else detect(image)
+ return {"project":78,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","detections":found,"metrics":{"ocr_regions":3 if mock else len(found),"prices_found":len(found),"mean_confidence":round(sum(x["confidence"] for x in found)/max(len(found),1),3)}}
+def main():
+ p=argparse.ArgumentParser();p.add_argument("--image",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(image=a.image),indent=None if a.json else 2))
+if __name__=="__main__":main()

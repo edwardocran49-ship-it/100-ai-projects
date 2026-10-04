@@ -7,6 +7,7 @@ models/
 06 - AI Agents + Automation (Days 51-60)/Project 053 - PDF Summarizer with Agents/data/
 .validation_audio/
 07 - Speech and Audio (Days 61-70)/**/data/
+08 - Healthcare + Finance + Retail (Days 71-80)/**/data/
 .models/
 *.wav
 transcript.txt
