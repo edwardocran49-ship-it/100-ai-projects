@@ -1,22 +1,16 @@
-from __future__ import annotations
-
-import sys
 import unittest
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from main import PROJECT_NUMBER, PROJECT_TITLE, run_demo
+import main
 
 
-class ProjectSmokeTest(unittest.TestCase):
-    def test_demo_completes(self) -> None:
-        result = run_demo()
-        self.assertEqual(result["project"], PROJECT_NUMBER)
-        self.assertEqual(result["title"], PROJECT_TITLE)
+class ProjectTest(unittest.TestCase):
+    def test_real_dataset_pipeline(self) -> None:
+        result = main.run_demo()
         self.assertEqual(result["status"], "ok")
-        self.assertIn("metrics", result)
-        self.assertIn("sample_prediction", result)
+        self.assertEqual(result["dataset"], "Boston Housing")
+        self.assertGreaterEqual(result["records"], 500)
+        self.assertGreater(result["metrics"]["mae"], 0)
+        self.assertLess(result["metrics"]["mae"], 10)
 
 
 if __name__ == "__main__":

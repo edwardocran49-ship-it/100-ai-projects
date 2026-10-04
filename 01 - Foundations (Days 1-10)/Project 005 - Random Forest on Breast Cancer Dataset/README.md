@@ -1,33 +1,22 @@
 # Project 5: Random Forest on Breast Cancer Dataset
 
 **Author:** Edward Ocran  
-**Category:** 01 - Foundations (Days 1-10)  
-**Implementation type:** Classification
+**Category:** 01 - Foundations (Days 1-10)
 
 ## Objective
 
-Use the Random Forest algorithm to classify breast cancer as malignant or benign
+Implement and evaluate the course project with its specified real dataset or, for Project 9, the synthetic observations explicitly required by the from-scratch optimization exercise.
 
-## What is included
+## Data provenance
 
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+See [DATASET.md](DATASET.md). The executable reports the dataset name and actual record count, making the input used by the model easy to verify.
 
 ## Run
 
 ```powershell
+python -m pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install pandas scikit-learn matplotlib seaborn`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+The split, model seed, and evaluation are deterministic so results can be reproduced locally and in continuous integration.

@@ -6,14 +6,11 @@
 
 ## Objective
 
-Predict median home prices in Boston using linear regression.
+Predict the median value of owner-occupied homes from the Boston Housing dataset. The runnable baseline uses average rooms per dwelling (`RM`) to predict median value (`MEDV`) with ordinary least squares.
 
-## What is included
+## Dataset
 
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+The repository includes the 506-row `HousingData.csv` downloaded from the Kaggle dataset `altavish/boston-housing-dataset`. Kaggle lists it as CC0: Public Domain. See [DATASET.md](DATASET.md) for provenance, columns, and limitations.
 
 ## Run
 
@@ -22,12 +19,11 @@ python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install pandas scikit-learn matplotlib seaborn`
+No third-party Python package is required for the baseline. The program validates the input, performs a deterministic 80/20 split, trains the regression, and reports mean absolute error.
 
 ## Success criteria
 
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+- Loads at least 500 genuine dataset records.
+- Uses `RM` as the feature and `MEDV` as the target.
+- Produces a finite holdout MAE below 10.
+- Passes the included automated test.

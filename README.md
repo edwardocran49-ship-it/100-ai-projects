@@ -4,11 +4,19 @@
 > The licensed course PDFs are not included in this public repository. Each implementation and test is original portfolio code.
 **Author:** Edward Ocran
 
-A 100-project AI learning portfolio organized into ten course-aligned sections. Every project contains a runnable offline implementation, setup guidance, and an automated smoke test.
+A 100-project AI learning portfolio organized into ten course-aligned sections. Each project contains a runnable implementation, setup guidance, and an automated smoke test. Dataset-backed projects use the named source from the course wherever it is available; projects based on APIs, pretrained models, user-supplied files, or an explicitly simulated exercise identify that input honestly.
+
+## Dataset policy
+
+- Small redistributable datasets are stored beside their projects in `data/`.
+- Large or access-controlled datasets use a reproducible downloader and remain outside Git.
+- Every upgraded data project includes `DATASET.md` with its source, local path, size, retrieval date, and licensing/provenance note.
+- The course PDFs are not redistributed.
 
 ## Validate everything
 
 ```powershell
+python -m pip install -r requirements.txt
 python validate_all.py
 ```
 

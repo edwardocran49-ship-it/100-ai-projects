@@ -1,54 +1,69 @@
-"""Runnable offline demonstration for Project 1: Predict House Prices (Boston Housing Dataset).
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Train and evaluate a housing-price baseline on the Boston Housing data."""
 from __future__ import annotations
 
 import argparse
+import csv
 import json
-import math
 import random
-import re
+from pathlib import Path
 from typing import Any
 
 PROJECT_NUMBER = 1
-PROJECT_TITLE = 'Predict House Prices (Boston Housing Dataset)'
+PROJECT_TITLE = "Predict House Prices (Boston Housing Dataset)"
 AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
+DATA_FILE = Path(__file__).with_name("data") / "HousingData.csv"
 
-def fit_line(xs: list[float], ys: list[float]) -> tuple[float, float]:
-    x_mean = sum(xs) / len(xs)
-    y_mean = sum(ys) / len(ys)
-    denominator = sum((x - x_mean) ** 2 for x in xs)
-    slope = sum((x - x_mean) * (y - y_mean) for x, y in zip(xs, ys)) / denominator
+
+def load_dataset(path: Path = DATA_FILE) -> list[tuple[float, float]]:
+    """Return complete RM/MEDV observations from the downloaded Kaggle CSV."""
+    rows: list[tuple[float, float]] = []
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        for row in csv.DictReader(handle):
+            if row.get("RM") and row.get("MEDV"):
+                rows.append((float(row["RM"]), float(row["MEDV"])))
+    if len(rows) < 400:
+        raise ValueError(f"Expected the Boston Housing data; found only {len(rows)} usable rows")
+    return rows
+
+
+def fit_line(rows: list[tuple[float, float]]) -> tuple[float, float]:
+    x_mean = sum(x for x, _ in rows) / len(rows)
+    y_mean = sum(y for _, y in rows) / len(rows)
+    denominator = sum((x - x_mean) ** 2 for x, _ in rows)
+    slope = sum((x - x_mean) * (y - y_mean) for x, y in rows) / denominator
     return slope, y_mean - slope * x_mean
 
 
 def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    xs = [float(i) for i in range(1, 61)]
-    expected_slope = 1.25 + (PROJECT_NUMBER % 9) / 10
-    ys = [expected_slope * x + 7 + rng.uniform(-2.0, 2.0) for x in xs]
-    slope, intercept = fit_line(xs[:48], ys[:48])
-    predictions = [slope * x + intercept for x in xs[48:]]
-    actual = ys[48:]
-    mae = sum(abs(a - p) for a, p in zip(actual, predictions)) / len(actual)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "regression", "metrics": {"mae": round(mae, 4), "slope": round(slope, 4)},
-            "sample_prediction": round(predictions[0], 3)}
+    rows = load_dataset()
+    random.Random(1001).shuffle(rows)
+    split = int(len(rows) * 0.8)
+    train, test = rows[:split], rows[split:]
+    slope, intercept = fit_line(train)
+    predictions = [slope * rooms + intercept for rooms, _ in test]
+    mae = sum(abs(actual - predicted) for (_, actual), predicted in zip(test, predictions)) / len(test)
+    return {
+        "project": PROJECT_NUMBER,
+        "title": PROJECT_TITLE,
+        "author": AUTHOR,
+        "status": "ok",
+        "task": "regression",
+        "dataset": "Boston Housing",
+        "source": "Kaggle: altavish/boston-housing-dataset",
+        "records": len(rows),
+        "features_used": ["RM"],
+        "target": "MEDV",
+        "metrics": {"mae": round(mae, 4), "slope": round(slope, 4)},
+        "sample_prediction": round(predictions[0], 3),
+    }
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
     parser.add_argument("--json", action="store_true", help="print machine-readable output")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

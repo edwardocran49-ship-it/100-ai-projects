@@ -3,4 +3,13 @@ __pycache__/
 .venv/
 .env
 models/
-data/
+# Large or restricted datasets are fetched locally by their project scripts.
+# Small redistributable teaching datasets may be committed in project data/ folders.
+*.zip
+*.tar
+*.tar.gz
+*.parquet
+# Source pages for these datasets do not state a redistribution license.
+**/Project 002 - */data/*.csv
+**/Project 003 - */data/*.csv
+**/Project 006 - */data/*.csv

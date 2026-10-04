@@ -1,52 +1,32 @@
-"""Runnable offline demonstration for Project 6: Naive Bayes Text Classifier.
+"""Multinomial Naive Bayes classifier on real SMS messages."""
+from pathlib import Path
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
+PROJECT_TITLE = "Naive Bayes Text Classifier"
+from download_data import ensure_dataset
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+DATA = Path(__file__).with_name("data") / "spam.csv"
 
-PROJECT_NUMBER = 6
-PROJECT_TITLE = 'Naive Bayes Text Classifier'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
-
-
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
-
-
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
+def run_demo():
+    ensure_dataset()
+    df = pd.read_csv(DATA, encoding="latin-1")[["v1", "v2"]].dropna()
+    X_train, X_test, y_train, y_test = train_test_split(df.v2, df.v1, test_size=.2, random_state=42, stratify=df.v1)
+    model = make_pipeline(TfidfVectorizer(stop_words="english"), MultinomialNB()).fit(X_train, y_train)
+    pred = model.predict(X_test)
+    return {"project": 6, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "SMS Spam Collection", "records": len(df), "metrics": {"accuracy": round(float(accuracy_score(y_test, pred)), 4), "spam_f1": round(float(f1_score(y_test, pred, pos_label="spam")), 4)}}
 
 def main() -> None:
+    import argparse, json
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
     main()
