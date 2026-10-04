@@ -1,52 +1,45 @@
-"""Runnable offline demonstration for Project 49: Image Super-Resolution with SRGAN.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Upscale a low-resolution image with a pretrained ESRGAN generator."""
 from __future__ import annotations
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+import argparse, json, os, sys
+from pathlib import Path
+from PIL import Image
 
-PROJECT_NUMBER = 49
-PROJECT_TITLE = 'Image Super-Resolution with SRGAN'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.vision import psnr, super_resolve_esrgan, upscale_bicubic
 
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
+PROJECT_NUMBER, PROJECT_TITLE, AUTHOR = 49, "Image Super-Resolution with SRGAN", "Edward Ocran"
 
 
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
+def _validation_backend(image):
+    return image.resize((image.width * 4, image.height * 4), Image.Resampling.BICUBIC)
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    if fast:
+        reference = Image.new("RGB", (64, 64), "teal")
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+        from skimage import data
+        reference = Image.fromarray(data.astronaut()).resize((256, 256))
+    low = reference.resize((reference.width // 4, reference.height // 4), Image.Resampling.BICUBIC)
+    output = super_resolve_esrgan(low, backend=_validation_backend if fast else None)
+    if not fast:
+        folder = HERE / "outputs"; folder.mkdir(exist_ok=True); output.save(folder / "super_resolved.png")
+    baseline = upscale_bicubic(low)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "model": "Real-ESRGAN x4plus", "metrics": {"scale_factor": 4, "output_width": output.width,
+            "output_height": output.height, "esrgan_psnr": psnr(reference, output),
+            "bicubic_psnr": psnr(reference, baseline)}}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(); result = run_demo()
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

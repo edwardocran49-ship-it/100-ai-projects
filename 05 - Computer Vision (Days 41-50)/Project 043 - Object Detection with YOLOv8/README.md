@@ -1,33 +1,16 @@
 # Project 43: Object Detection with YOLOv8
 
-**Author:** Edward Ocran  
-**Category:** 05 - Computer Vision (Days 41-50)  
-**Implementation type:** Vision
+**Author:** Edward Ocran
 
-## Objective
-
-Use the YOLOv8 model to detect and label objects in an image using bounding boxes
-
-## What is included
-
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Run Ultralytics YOLOv8n on a reference photograph and return class labels, confidence scores, and bounding-box coordinates.
 
 ## Run
 
 ```powershell
+pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install ultralytics`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+The first normal run downloads `yolov8n.pt`.  
+Findings and detection evidence: [Analysis report](ANALYSIS_REPORT.md)

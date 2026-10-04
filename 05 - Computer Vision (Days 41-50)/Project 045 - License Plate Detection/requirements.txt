@@ -1,0 +1,4 @@
+opencv-python>=4.10
+easyocr>=1.7
+numpy>=2
+kagglehub>=0.3

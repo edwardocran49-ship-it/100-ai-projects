@@ -1,0 +1,5 @@
+transformers>=4.57,<5
+torch>=2.6
+torchvision>=0.21
+Pillow>=11
+scikit-image>=0.25

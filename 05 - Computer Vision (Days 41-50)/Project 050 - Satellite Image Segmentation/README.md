@@ -1,33 +1,17 @@
 # Project 50: Satellite Image Segmentation
 
-**Author:** Edward Ocran  
-**Category:** 05 - Computer Vision (Days 41-50)  
-**Implementation type:** Vision
+**Author:** Edward Ocran
 
-## Objective
-
-Perform pixel-wise classification (semantic segmentation) on satellite imagery using
-
-## What is included
-
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Encode DeepGlobe land-cover masks and train a compact UNet-style encoder-decoder on real satellite image/mask pairs.
 
 ## Run
 
 ```powershell
+pip install -r requirements.txt
+python download_data.py
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install torch torchvision matplotlib segmentation-models-pytorch`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+Dataset provenance: [DATASET.md](DATASET.md)  
+Findings: [Analysis report](ANALYSIS_REPORT.md)

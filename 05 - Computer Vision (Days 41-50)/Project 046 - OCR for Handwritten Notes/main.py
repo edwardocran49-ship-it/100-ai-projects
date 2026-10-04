@@ -1,52 +1,59 @@
-"""Runnable offline demonstration for Project 46: OCR for Handwritten Notes.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Extract and score text regions from a photographed note with EasyOCR."""
 from __future__ import annotations
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+import argparse, json, os, sys
+from pathlib import Path
 
-PROJECT_NUMBER = 46
-PROJECT_TITLE = 'OCR for Handwritten Notes'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.vision import read_text
 
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
+PROJECT_NUMBER, PROJECT_TITLE, AUTHOR = 46, "OCR for Handwritten Notes", "Edward Ocran"
 
 
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
+class _Reader:
+    def readtext(self, image):
+        return [([[5, 5], [55, 5], [55, 20], [5, 20]], "Review the figures", .92),
+                ([[5, 25], [60, 25], [60, 40], [5, 40]], "before Friday", .88)]
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+
+def _edit_distance(left, right):
+    previous = list(range(len(right) + 1))
+    for row, left_item in enumerate(left, 1):
+        current = [row]
+        for column, right_item in enumerate(right, 1):
+            current.append(min(current[-1] + 1, previous[column] + 1,
+                               previous[column - 1] + (left_item != right_item)))
+        previous = current
+    return previous[-1]
+
+
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    if fast:
+        import numpy as np
+        image = np.full((64, 320, 3), 255, dtype=np.uint8)
+        expected = "Review the figures before Friday"
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+        from download_data import load_reference_line
+        image, expected = load_reference_line()
+    readings = read_text(image, reader=_Reader() if fast else None)
+    transcript = " ".join(item["text"] for item in readings)
+    reference_normalized, transcript_normalized = expected.lower(), transcript.lower()
+    character_error_rate = _edit_distance(reference_normalized, transcript_normalized) / max(len(reference_normalized), 1)
+    word_error_rate = _edit_distance(reference_normalized.split(), transcript_normalized.split()) / max(len(reference_normalized.split()), 1)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "dataset": "IAM Handwriting Database (IAM-line)", "model": "EasyOCR English",
+            "reference_text": expected, "transcript": transcript, "readings": readings,
+            "metrics": {"regions": len(readings), "mean_confidence": round(sum(item["confidence"] for item in readings) / max(len(readings), 1), 4),
+                        "character_error_rate": round(character_error_rate, 4), "word_error_rate": round(word_error_rate, 4)}}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(); result = run_demo()
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -1,33 +1,17 @@
 # Project 45: License Plate Detection
 
-**Author:** Edward Ocran  
-**Category:** 05 - Computer Vision (Days 41-50)  
-**Implementation type:** Vision
+**Author:** Edward Ocran
 
-## Objective
-
-Automatically detect the location of license plates in an image and optionally extract
-
-## What is included
-
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Find plate-shaped regions with OpenCV edges and contours, then read the leading crop with EasyOCR. The normal run uses `Cars379.png` from the Kaggle Car Plate Detection dataset.
 
 ## Run
 
 ```powershell
+pip install -r requirements.txt
+python download_data.py
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install opencv-python easyocr matplotlib`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+Data notes: [INPUT.md](INPUT.md)  
+Findings: [Analysis report](ANALYSIS_REPORT.md)

@@ -1,33 +1,16 @@
 # Project 41: Face Detection and Blur
 
-**Author:** Edward Ocran  
-**Category:** 05 - Computer Vision (Days 41-50)  
-**Implementation type:** Vision
+**Author:** Edward Ocran
 
-## Objective
-
-Use a face detection model (like OpenCV's Haar cascades or DNN face detector) to
-
-## What is included
-
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Detect faces with OpenCV's Haar cascade and apply Gaussian blur only inside each detected region. The normal run uses the scikit-image astronaut photograph and saves the processed frame.
 
 ## Run
 
 ```powershell
+pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install opencv-python matplotlib`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+Output: `outputs/blurred_faces.png`  
+Findings: [Analysis report](ANALYSIS_REPORT.md)

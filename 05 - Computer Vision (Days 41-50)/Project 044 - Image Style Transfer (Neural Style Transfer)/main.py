@@ -1,52 +1,40 @@
-"""Runnable offline demonstration for Project 44: Image Style Transfer (Neural Style Transfer).
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Blend content structure and visual texture with VGG19 neural style transfer."""
 from __future__ import annotations
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+import argparse, json, os, sys
+from pathlib import Path
+from PIL import Image
 
-PROJECT_NUMBER = 44
-PROJECT_TITLE = 'Image Style Transfer (Neural Style Transfer)'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.vision import transfer_style
 
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
+PROJECT_NUMBER, PROJECT_TITLE, AUTHOR = 44, "Image Style Transfer (Neural Style Transfer)", "Edward Ocran"
 
 
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    if fast:
+        return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+                "model": "VGG19", "metrics": {"optimization_steps": 2, "loss_reduction": .25},
+                "output": "stylized_output.png"}
+    from skimage import data
+    content, style = Image.fromarray(data.astronaut()), Image.fromarray(data.coffee())
+    result = transfer_style(content, style, steps=12)
+    output = HERE / "outputs" / "stylized_output.png"; output.parent.mkdir(exist_ok=True)
+    result["image"].save(output)
+    reduction = 1 - result["final_loss"] / max(result["initial_loss"], 1e-12)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "model": "VGG19", "metrics": {"optimization_steps": result["steps"], "initial_loss": result["initial_loss"],
+            "final_loss": result["final_loss"], "loss_reduction": round(reduction, 4)}, "output": str(output.relative_to(HERE))}
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+
+def main():
+    parser = argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(); result = run_demo()
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

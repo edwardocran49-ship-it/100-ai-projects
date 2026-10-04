@@ -1,33 +1,16 @@
 # Project 42: Image Caption Generator
 
-**Author:** Edward Ocran  
-**Category:** 05 - Computer Vision (Days 41-50)  
-**Implementation type:** Vision
+**Author:** Edward Ocran
 
-## Objective
-
-Generate natural language captions for input images using a pretrained vision-
-
-## What is included
-
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Generate a natural-language description of a real image with Salesforce's pretrained BLIP captioning model.
 
 ## Run
 
 ```powershell
+pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install transformers torch torchvision pillow`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+The first normal run downloads the BLIP processor and weights.  
+Findings and visual evidence: [Analysis report](ANALYSIS_REPORT.md)

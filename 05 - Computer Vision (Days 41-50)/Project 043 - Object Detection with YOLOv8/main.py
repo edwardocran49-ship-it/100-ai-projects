@@ -1,52 +1,42 @@
-"""Runnable offline demonstration for Project 43: Object Detection with YOLOv8.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Detect and label objects with the Ultralytics YOLOv8 nano model."""
 from __future__ import annotations
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+import argparse, json, os, sys
+from collections import Counter
+from pathlib import Path
+from PIL import Image
 
-PROJECT_NUMBER = 43
-PROJECT_TITLE = 'Object Detection with YOLOv8'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.vision import detect_objects
 
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
+PROJECT_NUMBER, PROJECT_TITLE, AUTHOR = 43, "Object Detection with YOLOv8", "Edward Ocran"
 
 
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
+def _validation_backend(image):
+    return [{"label": "person", "confidence": .91, "box": [5, 4, 50, 60]}]
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    if fast:
+        image = Image.new("RGB", (64, 64), "white")
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+        from skimage import data
+        image = Image.fromarray(data.astronaut())
+    detections = detect_objects(image, backend=_validation_backend if fast else None)
+    counts = Counter(item["label"] for item in detections)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "model": "YOLOv8n", "detections": detections,
+            "metrics": {"objects_detected": len(detections), "classes": dict(sorted(counts.items())),
+                        "mean_confidence": round(sum(item["confidence"] for item in detections) / max(len(detections), 1), 4)}}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(); result = run_demo()
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

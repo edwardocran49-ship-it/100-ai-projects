@@ -1,52 +1,51 @@
-"""Runnable offline demonstration for Project 45: License Plate Detection.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Locate license-plate-shaped regions and read candidate text with EasyOCR."""
 from __future__ import annotations
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+import argparse, json, os, sys
+from pathlib import Path
 
-PROJECT_NUMBER = 45
-PROJECT_TITLE = 'License Plate Detection'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.vision import plate_candidates, read_text
 
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
+PROJECT_NUMBER, PROJECT_TITLE, AUTHOR = 45, "License Plate Detection", "Edward Ocran"
 
 
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
+class _Reader:
+    def readtext(self, image):
+        h, w = image.shape[:2]
+        return [([[0, 0], [w, 0], [w, h], [0, h]], "ABC 1234", .94)]
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    if fast:
+        import cv2
+        import numpy as np
+        image = np.full((120, 320, 3), 220, dtype=np.uint8)
+        cv2.rectangle(image, (80, 55), (240, 95), (15, 15, 15), 2)
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+        import cv2
+        from download_data import load_reference_image
+        source = load_reference_image()
+        image = cv2.cvtColor(cv2.imread(str(source)), cv2.COLOR_BGR2RGB)
+        if image is None:
+            raise RuntimeError(f"Unable to read dataset image: {source}")
+    candidates = plate_candidates(image)
+    x, y, width, height = candidates[0] if candidates else (0, 0, image.shape[1], image.shape[0])
+    readings = read_text(image[y:y + height, x:x + width], reader=_Reader() if fast else None)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "dataset": "Kaggle Car Plate Detection (Cars379.png)",
+            "model": "OpenCV contours + EasyOCR", "candidates": len(candidates), "readings": readings,
+            "metrics": {"best_confidence": max((item["confidence"] for item in readings), default=0.0)}}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(); result = run_demo()
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

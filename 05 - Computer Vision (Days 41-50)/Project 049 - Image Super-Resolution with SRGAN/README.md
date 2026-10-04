@@ -1,33 +1,16 @@
 # Project 49: Image Super-Resolution with SRGAN
 
-**Author:** Edward Ocran  
-**Category:** 05 - Computer Vision (Days 41-50)  
-**Implementation type:** Vision
+**Author:** Edward Ocran
 
-## Objective
-
-Reconstruct high-resolution images from low-resolution inputs using a Generative
-
-## What is included
-
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Upscale a 64 × 64 photograph to 256 × 256 with pretrained Real-ESRGAN x4plus and compare it with bicubic interpolation using PSNR and visual evidence.
 
 ## Run
 
 ```powershell
+pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install torch torchvision pillow matplotlib`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+Output: `outputs/super_resolved.png`  
+Findings: [Analysis report](ANALYSIS_REPORT.md)

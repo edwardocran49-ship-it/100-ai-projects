@@ -1,0 +1,4 @@
+torch>=2.6
+Pillow>=11
+numpy>=2
+kagglehub>=0.3

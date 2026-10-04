@@ -3,6 +3,7 @@ __pycache__/
 .venv/
 .env
 models/
+*.pt
 # Large or restricted datasets are fetched locally by their project scripts.
 # Small redistributable teaching datasets may be committed in project data/ folders.
 *.zip
