@@ -15,7 +15,9 @@ def main() -> int:
             [sys.executable, str(main_file), "--json"], capture_output=True, text=True, timeout=30
         )
         try:
-            payload = json.loads(completed.stdout.strip())
+            # Download libraries may emit progress notices before the program's
+            # machine-readable result. Each project prints its JSON result last.
+            payload = json.loads(completed.stdout.strip().splitlines()[-1])
         except Exception:
             payload = {}
         if completed.returncode or payload.get("status") != "ok":
