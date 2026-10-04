@@ -16,7 +16,8 @@ class ProjectSmokeTest(unittest.TestCase):
         self.assertEqual(result["title"], PROJECT_TITLE)
         self.assertEqual(result["status"], "ok")
         self.assertIn("metrics", result)
-        self.assertIn("sample_prediction", result)
+        self.assertTrue(result["result"]["scheduled"])
+        self.assertEqual(result["result"]["selected"], "2026-10-05 12:00")
 
 
 if __name__ == "__main__":

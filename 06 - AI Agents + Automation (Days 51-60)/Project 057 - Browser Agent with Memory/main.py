@@ -1,60 +1,30 @@
-"""Runnable offline demonstration for Project 57: Browser Agent with Memory.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Read a webpage once, store chunks, and retrieve relevant passages."""
 from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 57
-PROJECT_TITLE = 'Browser Agent with Memory'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-KNOWLEDGE = {
-    "memory": "Memory stores useful context between agent steps.",
-    "tool": "Tools let an agent perform bounded, auditable actions.",
-    "safety": "Validate inputs and keep a human in control of consequential actions.",
-}
+import argparse,json,os,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2]; sys.path.insert(0,str(ROOT))
+from portfolio_core.agents import VectorMemory,summarize_text
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=57,"Browser Agent with Memory","Edward Ocran"
 
 
-def safe_calculate(expression: str) -> float:
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", expression):
-        raise ValueError("Only arithmetic expressions are allowed")
-    return float(eval(expression, {"__builtins__": {}}, {}))
+def fetch_page(url:str)->str:
+    import requests
+    from bs4 import BeautifulSoup
+    response=requests.get(url,timeout=30,headers={"User-Agent":"portfolio-research/1.0"}); response.raise_for_status()
+    soup=BeautifulSoup(response.text,"html.parser")
+    return "\n".join(paragraph.get_text(" ",strip=True) for paragraph in soup.find_all("p") if paragraph.get_text(strip=True))
 
 
-def agent(query: str) -> dict[str, Any]:
-    arithmetic = re.search(r"(?:calculate|compute)\s+(.+)", query.lower())
-    if arithmetic:
-        return {"tool": "calculator", "answer": safe_calculate(arithmetic.group(1))}
-    key = max(KNOWLEDGE, key=lambda item: int(item in query.lower()))
-    return {"tool": "local_knowledge", "answer": KNOWLEDGE[key]}
+def run_demo(fast:bool|None=None):
+    fast=os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" if fast is None else fast
+    url="https://en.wikipedia.org/wiki/Artificial_intelligence"
+    text=("Artificial intelligence became an academic discipline in 1956. The field went through cycles of optimism and funding, followed by periods called AI winters. Machine learning later became central to progress." if fast else fetch_page(url))
+    memory=VectorMemory(); chunks=memory.memorize(text,url,800); passages=memory.query("history Dartmouth 1956 Turing AI winter expert systems machine learning",3)
+    answer=" ".join(summarize_text(item["text"],1) for item in passages if item["score"]>0)
+    return {"project":PROJECT_NUMBER,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","source":url,"answer":answer,"passages":passages,
+            "metrics":{"chunks_stored":chunks,"retrieved":len(passages),"best_similarity":passages[0]["score"]}}
 
 
-def run_demo() -> dict[str, Any]:
-    results = [agent("calculate 12 * (3 + 2)"), agent("How should tool safety work?")]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "agent",
-            "metrics": {"tool_calls": len(results)}, "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args(); result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

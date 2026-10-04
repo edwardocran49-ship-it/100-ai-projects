@@ -1,60 +1,19 @@
-"""Runnable offline demonstration for Project 54: AI Calendar Scheduler Agent.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Select an available business-hour slot and create a calendar event."""
 from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 54
-PROJECT_TITLE = 'AI Calendar Scheduler Agent'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-KNOWLEDGE = {
-    "memory": "Memory stores useful context between agent steps.",
-    "tool": "Tools let an agent perform bounded, auditable actions.",
-    "safety": "Validate inputs and keep a human in control of consequential actions.",
-}
+import argparse, json, sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2]; sys.path.insert(0,str(ROOT))
+from portfolio_core.agents import schedule_event
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=54,"AI Calendar Scheduler Agent","Edward Ocran"
 
 
-def safe_calculate(expression: str) -> float:
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", expression):
-        raise ValueError("Only arithmetic expressions are allowed")
-    return float(eval(expression, {"__builtins__": {}}, {}))
+def run_demo():
+    calendar={"2026-10-05 10:00":"Team Sync","2026-10-05 14:00":"Sales Demo","2026-10-05 15:00":"Budget Review"}
+    result=schedule_event(calendar,"2026-10-05","Project meeting",after_hour=12)
+    return {"project":PROJECT_NUMBER,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","request":"Schedule a project meeting tomorrow afternoon","result":result,
+            "metrics":{"occupied_before":3,"available_considered":len(result["available_before_booking"]),"events_after":len(calendar)}}
 
 
-def agent(query: str) -> dict[str, Any]:
-    arithmetic = re.search(r"(?:calculate|compute)\s+(.+)", query.lower())
-    if arithmetic:
-        return {"tool": "calculator", "answer": safe_calculate(arithmetic.group(1))}
-    key = max(KNOWLEDGE, key=lambda item: int(item in query.lower()))
-    return {"tool": "local_knowledge", "answer": KNOWLEDGE[key]}
-
-
-def run_demo() -> dict[str, Any]:
-    results = [agent("calculate 12 * (3 + 2)"), agent("How should tool safety work?")]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "agent",
-            "metrics": {"tool_calls": len(results)}, "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args(); result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

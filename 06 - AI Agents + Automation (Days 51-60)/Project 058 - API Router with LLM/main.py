@@ -1,60 +1,21 @@
-"""Runnable offline demonstration for Project 58: API Router with LLM.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Route natural-language requests to weather, news, or calculator tools."""
 from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 58
-PROJECT_TITLE = 'API Router with LLM'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-KNOWLEDGE = {
-    "memory": "Memory stores useful context between agent steps.",
-    "tool": "Tools let an agent perform bounded, auditable actions.",
-    "safety": "Validate inputs and keep a human in control of consequential actions.",
-}
+import argparse,json,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2]; sys.path.insert(0,str(ROOT))
+from portfolio_core.agents import route_query,dispatch_tool
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=58,"API Router with LLM","Edward Ocran"
 
 
-def safe_calculate(expression: str) -> float:
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", expression):
-        raise ValueError("Only arithmetic expressions are allowed")
-    return float(eval(expression, {"__builtins__": {}}, {}))
+def run_demo():
+    queries=["What's the weather like in Tokyo?","Give me news about space exploration.","What's 27 / 3 + 6?"]
+    expected=["get_weather","get_news","calculate"]
+    routed=[{"query":query,"route":route_query(query)} for query in queries]
+    for item in routed: item["response"]=dispatch_tool(item["route"])
+    return {"project":PROJECT_NUMBER,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","routes":routed,
+            "metrics":{"queries":len(queries),"correct_routes":sum(item["route"]["tool"]==want for item,want in zip(routed,expected)),"tools_used":len({item["route"]["tool"] for item in routed})}}
 
 
-def agent(query: str) -> dict[str, Any]:
-    arithmetic = re.search(r"(?:calculate|compute)\s+(.+)", query.lower())
-    if arithmetic:
-        return {"tool": "calculator", "answer": safe_calculate(arithmetic.group(1))}
-    key = max(KNOWLEDGE, key=lambda item: int(item in query.lower()))
-    return {"tool": "local_knowledge", "answer": KNOWLEDGE[key]}
-
-
-def run_demo() -> dict[str, Any]:
-    results = [agent("calculate 12 * (3 + 2)"), agent("How should tool safety work?")]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "agent",
-            "metrics": {"tool_calls": len(results)}, "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def main():
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--json",action="store_true"); args=parser.parse_args(); result=run_demo(); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

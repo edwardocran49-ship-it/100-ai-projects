@@ -1,60 +1,22 @@
-"""Runnable offline demonstration for Project 56: File Organizer Agent (Desktop AI).
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Classify files and move them into category folders."""
 from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 56
-PROJECT_TITLE = 'File Organizer Agent (Desktop AI)'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-KNOWLEDGE = {
-    "memory": "Memory stores useful context between agent steps.",
-    "tool": "Tools let an agent perform bounded, auditable actions.",
-    "safety": "Validate inputs and keep a human in control of consequential actions.",
-}
+import argparse,json,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2]; sys.path.insert(0,str(ROOT))
+from portfolio_core.agents import organize_folder
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=56,"File Organizer Agent (Desktop AI)","Edward Ocran"
 
 
-def safe_calculate(expression: str) -> float:
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", expression):
-        raise ValueError("Only arithmetic expressions are allowed")
-    return float(eval(expression, {"__builtins__": {}}, {}))
-
-
-def agent(query: str) -> dict[str, Any]:
-    arithmetic = re.search(r"(?:calculate|compute)\s+(.+)", query.lower())
-    if arithmetic:
-        return {"tool": "calculator", "answer": safe_calculate(arithmetic.group(1))}
-    key = max(KNOWLEDGE, key=lambda item: int(item in query.lower()))
-    return {"tool": "local_knowledge", "answer": KNOWLEDGE[key]}
-
-
-def run_demo() -> dict[str, Any]:
-    results = [agent("calculate 12 * (3 + 2)"), agent("How should tool safety work?")]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "agent",
-            "metrics": {"tool_calls": len(results)}, "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+def run_demo(folder:Path|None=None):
+    if folder is None:
+        folder=Path(__file__).resolve().parent / "fixtures"; move=False
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+        move=True
+    result=organize_folder(folder,move=move)
+    return {"project":PROJECT_NUMBER,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","mode":"move" if move else "preview",
+            "metrics":{"files_processed":result["files"],"categories_created":len(result["categories"])},**result}
 
 
-if __name__ == "__main__":
-    main()
+def main():
+    parser=argparse.ArgumentParser(description=PROJECT_TITLE); parser.add_argument("--folder",type=Path); parser.add_argument("--json",action="store_true"); args=parser.parse_args(); result=run_demo(args.folder); print(json.dumps(result,sort_keys=True) if args.json else json.dumps(result,indent=2,sort_keys=True))
+if __name__=="__main__": main()

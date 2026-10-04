@@ -16,7 +16,8 @@ class ProjectSmokeTest(unittest.TestCase):
         self.assertEqual(result["title"], PROJECT_TITLE)
         self.assertEqual(result["status"], "ok")
         self.assertIn("metrics", result)
-        self.assertIn("sample_prediction", result)
+        self.assertEqual(result["metrics"]["attempt_count"], 2)
+        self.assertEqual(result["metrics"]["tests_passed"], result["metrics"]["tests_total"])
 
 
 if __name__ == "__main__":
