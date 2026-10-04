@@ -1,33 +1,32 @@
-    # Project 39: Chatbot Using DialoGPT or RAG
+# Project 039: Chatbot Using DialoGPT
 
-    **Author:** Edward Ocran  
-    **Category:** 04 - NLP Projects (Days 31-40)  
-    **Implementation type:** Nlp
+**Author:** Edward Ocran
+**Category:** NLP Projects (Days 31–40)
 
-    ## Objective
+## Objective
 
-    Free-form chatting
+Generate a conversational turn with prior dialogue history using DialoGPT-small.
 
-    ## What is included
+## Evidence and inputs
 
-    - `main.py` - deterministic, offline runnable implementation.
-    - `test_project.py` - automated smoke test.
-    - `course-requirements.txt` - dependency commands mentioned by the course, when present.
+Embedded conversation and prompt. The default execution uses the actual model or training pipeline described by the course. Fast validation is available to CI so repository checks do not repeatedly download large model weights.
 
-    ## Run
+## Included files
 
-    ```powershell
-    python main.py
-    python -m unittest -v test_project.py
-    ```
+- `main.py` — runnable implementation and JSON CLI output
+- `test_project.py` — project-specific behavior checks
+- `requirements.txt` — runtime dependencies
+- `ANALYSIS_REPORT.md` — measured findings with two rendered charts
+- `charts/` — report figures
 
-    The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
+## Run
 
-    ## Course dependency guidance
+```powershell
+python -m pip install -r requirements.txt
+python main.py
+python -m unittest -v test_project.py
+```
 
-    - `pip install transformers torch`
-- `pip install transformers faiss-cpu`
+Run `python main.py`.
 
-    ## Success criteria
-
-    The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+See [ANALYSIS_REPORT.md](ANALYSIS_REPORT.md) for the evaluated result, interpretation, charts, and reproducibility notes.

@@ -1,51 +1,55 @@
-"""Runnable offline demonstration for Project 31: Sentiment Analysis with BERT.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Evaluate a pretrained BERT-family sentiment model on labelled reviews."""
 from __future__ import annotations
 
 import argparse
 import json
-import math
-import random
-import re
-from typing import Any
+import os
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.nlp import classify_sentiment, evaluate_sentiment
 
 PROJECT_NUMBER = 31
-PROJECT_TITLE = 'Sentiment Analysis with BERT'
+PROJECT_TITLE = "Sentiment Analysis with BERT"
 AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
 
 
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
+def _validation_backend(texts):
+    return [{"label": "POSITIVE" if "excellent" in text.lower() else "NEGATIVE", "score": 0.99} for text in texts]
 
 
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    if fast:
+        rows = [{"text": "An excellent film.", "label": 1}, {"text": "A dull film.", "label": 0}]
+        metrics = evaluate_sentiment(rows, backend=_validation_backend)
+        sample = classify_sentiment([rows[0]["text"]], backend=_validation_backend)[0]
+    else:
+        import pandas as pd
+        from download_data import ensure_dataset
+
+        frame = pd.read_csv(ensure_dataset())
+        positive = frame[frame["sentiment"].str.lower() == "positive"].sample(100, random_state=31)
+        negative = frame[frame["sentiment"].str.lower() == "negative"].sample(100, random_state=31)
+        sample_frame = pd.concat([positive, negative]).sample(frac=1, random_state=31)
+        rows = [{"text": row.review, "label": int(row.sentiment.lower() == "positive")}
+                for row in sample_frame.itertuples()]
+        metrics = evaluate_sentiment(rows)
+        sample = classify_sentiment(["The performances hold the story together."])[0]
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR,
+            "status": "ok", "model": "distilbert-base-uncased-finetuned-sst-2-english",
+            "dataset": "IMDb Dataset of 50K Movie Reviews", "metrics": metrics, "sample_prediction": sample}
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

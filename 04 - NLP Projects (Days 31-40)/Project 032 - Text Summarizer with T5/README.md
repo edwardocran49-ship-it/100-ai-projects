@@ -1,33 +1,32 @@
-# Project 32: Text Summarizer with T5
+# Project 032: Text Summarizer with T5
 
-**Author:** Edward Ocran  
-**Category:** 04 - NLP Projects (Days 31-40)  
-**Implementation type:** Nlp
+**Author:** Edward Ocran
+**Category:** NLP Projects (Days 31–40)
 
 ## Objective
 
-Use the pretrained T5 model to summarize large chunks of text by framing
+Generate a concise abstractive summary with the T5 transformer and measure compression.
 
-## What is included
+## Evidence and inputs
 
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+Embedded policy-style source passage. The default execution uses the actual model or training pipeline described by the course. Fast validation is available to CI so repository checks do not repeatedly download large model weights.
+
+## Included files
+
+- `main.py` — runnable implementation and JSON CLI output
+- `test_project.py` — project-specific behavior checks
+- `requirements.txt` — runtime dependencies
+- `ANALYSIS_REPORT.md` — measured findings with two rendered charts
+- `charts/` — report figures
 
 ## Run
 
 ```powershell
+python -m pip install -r requirements.txt
 python main.py
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
+Run `python main.py`.
 
-## Course dependency guidance
-
-- `pip install transformers torch pandas`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+See [ANALYSIS_REPORT.md](ANALYSIS_REPORT.md) for the evaluated result, interpretation, charts, and reproducibility notes.

@@ -1,0 +1,16 @@
+Jordan Mensah
+jordan.mensah@example.com
++1 (312) 555-0187
+
+SKILLS
+Python, SQL, Excel, Tableau, machine learning, data analysis
+
+EDUCATION
+MSc, Applied Analytics, Lakeshore University
+
+EXPERIENCE
+Data Analyst, Northwind Logistics
+Built Python and SQL reporting workflows and maintained Tableau dashboards.
+
+PROJECTS
+Designed a demand forecasting review for regional operations.

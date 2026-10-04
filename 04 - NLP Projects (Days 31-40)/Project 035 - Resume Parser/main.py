@@ -1,51 +1,52 @@
-"""Runnable offline demonstration for Project 35: Resume Parser.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Extract contact details, skills, education, and experience from a resume."""
 from __future__ import annotations
 
 import argparse
 import json
-import math
-import random
-import re
-from typing import Any
+import os
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.nlp import load_resume_text, parse_resume
 
 PROJECT_NUMBER = 35
-PROJECT_TITLE = 'Resume Parser'
+PROJECT_TITLE = "Resume Parser"
 AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
 
 
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
+class _Entity:
+    def __init__(self, text, label):
+        self.text, self.label_ = text, label
 
 
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
+class _Document:
+    ents = [_Entity("Jordan Mensah", "PERSON")]
+
+
+def _validation_nlp(text):
+    return _Document()
+
+
+def run_demo(fast: bool | None = None, path: Path | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    source = path or HERE / "data" / "sample_resume.txt"
+    parsed = parse_resume(load_resume_text(source), nlp=_validation_nlp if fast else None)
+    populated = sum(bool(parsed[key]) for key in ("name", "email", "phone", "skills", "education", "experience"))
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "input": source.name, "result": parsed, "metrics": {"fields_extracted": populated, "skills_found": len(parsed["skills"])}}
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("resume", nargs="?", type=Path)
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+    result = run_demo(path=args.resume)
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

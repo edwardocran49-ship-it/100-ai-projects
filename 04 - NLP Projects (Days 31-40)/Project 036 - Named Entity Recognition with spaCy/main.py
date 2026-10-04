@@ -1,51 +1,53 @@
-"""Runnable offline demonstration for Project 36: Named Entity Recognition with spaCy.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Extract people, organisations, places, and dates with spaCy."""
 from __future__ import annotations
 
 import argparse
 import json
-import math
-import random
-import re
-from typing import Any
+import os
+import sys
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.nlp import extract_entities
 
 PROJECT_NUMBER = 36
-PROJECT_TITLE = 'Named Entity Recognition with spaCy'
+PROJECT_TITLE = "Named Entity Recognition with spaCy"
 AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
+TEXT = "Satya Nadella met Microsoft researchers in London on 14 March 2025."
 
 
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
+class _Entity:
+    def __init__(self, text, label, start, end):
+        self.text, self.label_, self.start_char, self.end_char = text, label, start, end
 
 
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
+class _Document:
+    ents = [_Entity("Satya Nadella", "PERSON", 0, 13), _Entity("Microsoft", "ORG", 18, 27),
+            _Entity("London", "GPE", 43, 49), _Entity("14 March 2025", "DATE", 53, 66)]
+
+
+def _validation_nlp(text):
+    return _Document()
+
+
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    entities = extract_entities(TEXT, nlp=_validation_nlp if fast else None)
+    counts = Counter(item["label"] for item in entities)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "model": "en_core_web_sm", "text": TEXT, "entities": entities,
+            "metrics": {"entities_found": len(entities), "labels": dict(sorted(counts.items()))}}
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

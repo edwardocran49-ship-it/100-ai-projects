@@ -1,51 +1,44 @@
-"""Runnable offline demonstration for Project 33: Question Answering System (Using Transformers).
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Extractive question answering with a SQuAD-trained transformer."""
 from __future__ import annotations
 
 import argparse
 import json
-import math
-import random
-import re
-from typing import Any
+import os
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.nlp import answer_question
 
 PROJECT_NUMBER = 33
-PROJECT_TITLE = 'Question Answering System (Using Transformers)'
+PROJECT_TITLE = "Question Answering System (Using Transformers)"
 AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
+CONTEXT = "The James Webb Space Telescope was launched on 25 December 2021 from French Guiana. It observes primarily in infrared wavelengths."
+QUESTION = "When was the James Webb Space Telescope launched?"
 
 
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
+def _validation_backend(**kwargs):
+    answer = "25 December 2021"
+    start = kwargs["context"].index(answer)
+    return {"answer": answer, "score": 0.98, "start": start, "end": start + len(answer)}
 
 
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    result = answer_question(QUESTION, CONTEXT, backend=_validation_backend if fast else None)
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "model": "distilbert-base-cased-distilled-squad", "question": QUESTION, "result": result,
+            "metrics": {"answer_confidence": result["score"], "context_characters": len(CONTEXT)}}
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

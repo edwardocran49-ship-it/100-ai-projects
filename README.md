@@ -12,7 +12,7 @@ A 100-project AI learning portfolio organized into ten course-aligned sections. 
 - Large or access-controlled datasets use a reproducible downloader and remain outside Git.
 - Every upgraded data project includes `DATASET.md` with its source, local path, size, retrieval date, and licensing/provenance note.
 - Each upgraded data project includes `ANALYSIS_REPORT.md` with an executive summary, measured results, two evidence charts, analytical interpretation, limitations, and recommendations.
-- Projects 1–30 currently use the expanded report format. Their 60 PNG charts render directly on GitHub and can be rebuilt with `python tools/build_analysis_reports.py`.
+- Projects 1–40 currently use the expanded report format. Their 80 PNG charts render directly on GitHub. Projects 1–30 can be rebuilt with `python tools/build_analysis_reports.py`; Projects 31–40 use `python tools/build_nlp_charts.py`.
 - The course PDFs are not redistributed.
 
 ## Validate everything

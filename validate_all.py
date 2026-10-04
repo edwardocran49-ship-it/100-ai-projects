@@ -19,6 +19,7 @@ def main() -> int:
                 capture_output=True,
                 text=True,
                 timeout=timeout_seconds,
+                env={**os.environ, "PORTFOLIO_FAST_VALIDATION": "1"},
             )
         except subprocess.TimeoutExpired as exc:
             failures.append(

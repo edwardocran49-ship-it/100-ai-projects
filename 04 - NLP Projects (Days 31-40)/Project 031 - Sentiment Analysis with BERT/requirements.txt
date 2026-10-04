@@ -1,0 +1,5 @@
+transformers>=4.57,<5
+torch>=2.6
+scikit-learn>=1.6
+pandas>=2.2
+kagglehub>=0.3

@@ -1,51 +1,46 @@
-"""Runnable offline demonstration for Project 32: Text Summarizer with T5.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Abstractive text summarization with T5."""
 from __future__ import annotations
 
 import argparse
 import json
-import math
-import random
-import re
-from typing import Any
+import os
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from portfolio_core.nlp import summarize_text
 
 PROJECT_NUMBER = 32
-PROJECT_TITLE = 'Text Summarizer with T5'
+PROJECT_TITLE = "Text Summarizer with T5"
 AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
-
-
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
+ARTICLE = ("Coastal cities are expanding flood defenses as rainfall becomes less predictable. "
+           "Engineers are combining restored wetlands with barriers and improved drainage. "
+           "The mixed approach lowers surge risk while preserving habitats and public access. "
+           "Local monitoring will determine which interventions receive additional funding.")
 
 
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
+def _validation_backend(text, **kwargs):
+    return [{"summary_text": "Cities are combining natural and engineered flood defenses."}]
+
+
+def run_demo(fast: bool | None = None) -> dict:
+    fast = os.getenv("PORTFOLIO_FAST_VALIDATION") == "1" if fast is None else fast
+    summary = summarize_text(ARTICLE, backend=_validation_backend if fast else None)
+    source_words, summary_words = len(ARTICLE.split()), len(summary.split())
+    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "author": AUTHOR, "status": "ok",
+            "model": "google-t5/t5-small", "metrics": {"source_words": source_words,
+            "summary_words": summary_words, "compression_ratio": round(summary_words / source_words, 3)},
+            "summary": summary}
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
