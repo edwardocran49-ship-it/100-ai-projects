@@ -1,55 +1,29 @@
-"""Runnable offline demonstration for Project 12: Predict Bike Rentals with Time-Series Models.
+"""Bike-rental forecasting on hourly Capital Bikeshare observations."""
+import pandas as pd
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.metrics import mean_absolute_error
+from download_data import ensure_dataset
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
+PROJECT_TITLE = "Predict Bike Rentals with Time-Series Models"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 12
-PROJECT_TITLE = 'Predict Bike Rentals with Time-Series Models'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def fit_line(xs: list[float], ys: list[float]) -> tuple[float, float]:
-    x_mean = sum(xs) / len(xs)
-    y_mean = sum(ys) / len(ys)
-    denominator = sum((x - x_mean) ** 2 for x in xs)
-    slope = sum((x - x_mean) * (y - y_mean) for x, y in zip(xs, ys)) / denominator
-    return slope, y_mean - slope * x_mean
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    xs = [float(i) for i in range(1, 61)]
-    expected_slope = 1.25 + (PROJECT_NUMBER % 9) / 10
-    ys = [expected_slope * x + 7 + rng.uniform(-2.0, 2.0) for x in xs]
-    slope, intercept = fit_line(xs[:48], ys[:48])
-    predictions = [slope * x + intercept for x in xs[48:]]
-    actual = ys[48:]
-    mae = sum(abs(a - p) for a, p in zip(actual, predictions)) / len(actual)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "regression", "metrics": {"mae": round(mae, 4), "slope": round(slope, 4)},
-            "sample_prediction": round(predictions[0], 3)}
+def run_demo():
+    df = pd.read_csv(ensure_dataset()).sort_values(["dteday", "hr"])
+    for lag in (1, 24, 168):
+        df[f"lag_{lag}"] = df["cnt"].shift(lag)
+    df = df.dropna()
+    features = ["season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit", "temp", "atemp", "hum", "windspeed", "lag_1", "lag_24", "lag_168"]
+    split = int(len(df) * .8)
+    model = HistGradientBoostingRegressor(max_iter=150, random_state=42).fit(df[features].iloc[:split], df.cnt.iloc[:split])
+    prediction = model.predict(df[features].iloc[split:])
+    return {"project": 12, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Bike Sharing in Washington D.C.", "records": len(df), "metrics": {"mae_rentals": round(float(mean_absolute_error(df.cnt.iloc[split:], prediction)), 4)}}
 
 def main() -> None:
+    import argparse, json
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
     main()

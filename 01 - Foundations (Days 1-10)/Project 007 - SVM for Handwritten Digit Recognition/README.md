@@ -11,6 +11,10 @@ Implement and evaluate the course project with its specified real dataset or, fo
 
 See [DATASET.md](DATASET.md). The executable reports the dataset name and actual record count, making the input used by the model easy to verify.
 
+## Analysis
+
+Read the verified findings in [ANALYSIS_REPORT.md](ANALYSIS_REPORT.md).
+
 ## Run
 
 ```powershell

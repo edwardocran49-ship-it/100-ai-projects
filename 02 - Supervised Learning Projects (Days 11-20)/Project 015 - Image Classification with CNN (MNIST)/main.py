@@ -1,53 +1,37 @@
-"""Runnable offline demonstration for Project 15: Image Classification with CNN (MNIST).
+"""Convolution-feature image classification on the original MNIST pixels."""
+import numpy as np
+import pandas as pd
+from scipy.signal import convolve2d
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import accuracy_score
+from download_data import ensure_dataset
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
+PROJECT_TITLE = "Image Classification with CNN (MNIST)"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+def _features(images):
+    kernels = [np.array([[1,0,-1],[2,0,-2],[1,0,-1]]), np.array([[1,2,1],[0,0,0],[-1,-2,-1]])]
+    rows = []
+    for image in images:
+        maps = [np.maximum(convolve2d(image, kernel, mode="valid"), 0) for kernel in kernels]
+        pooled = [m.reshape(13,2,13,2).max(axis=(1,3)).ravel() for m in maps]
+        rows.append(np.concatenate(pooled))
+    return np.asarray(rows)
 
-PROJECT_NUMBER = 15
-PROJECT_TITLE = 'Image Classification with CNN (MNIST)'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def detect_bright_region(image: list[list[int]], threshold: int = 180) -> dict[str, Any]:
-    hits = [(x, y) for y, row in enumerate(image) for x, value in enumerate(row) if value >= threshold]
-    if not hits:
-        return {"detected": False, "bbox": None, "pixels": 0}
-    xs, ys = zip(*hits)
-    return {"detected": True, "bbox": [min(xs), min(ys), max(xs), max(ys)], "pixels": len(hits)}
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    image = [[rng.randint(0, 40) for _ in range(16)] for _ in range(16)]
-    start = 3 + PROJECT_NUMBER % 5
-    for y in range(start, start + 5):
-        for x in range(6, 11):
-            image[y][x] = rng.randint(210, 255)
-    detection = detect_bright_region(image)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "computer_vision",
-            "metrics": {"bright_pixels": detection["pixels"]}, "sample_prediction": detection}
+def run_demo():
+    df = pd.read_csv(ensure_dataset(), nrows=12000)
+    y = df.iloc[:, 0].to_numpy(); images = df.iloc[:, 1:].to_numpy(dtype=np.float32).reshape(-1, 28, 28) / 255
+    X = _features(images)
+    split = 10000
+    model = SGDClassifier(loss="log_loss", max_iter=40, random_state=42, n_jobs=1).fit(X[:split], y[:split])
+    return {"project": 15, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "MNIST", "records": len(df), "model": "convolution-ReLU-pooling classifier", "metrics": {"accuracy": round(float(accuracy_score(y[split:], model.predict(X[split:]))), 4)}}
 
 def main() -> None:
+    import argparse, json
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
     main()

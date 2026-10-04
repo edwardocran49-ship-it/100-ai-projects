@@ -11,6 +11,7 @@ A 100-project AI learning portfolio organized into ten course-aligned sections. 
 - Small redistributable datasets are stored beside their projects in `data/`.
 - Large or access-controlled datasets use a reproducible downloader and remain outside Git.
 - Every upgraded data project includes `DATASET.md` with its source, local path, size, retrieval date, and licensing/provenance note.
+- Every completed project includes `ANALYSIS_REPORT.md` with the measured result, a plain-language interpretation, limitations, and a concrete next step.
 - The course PDFs are not redistributed.
 
 ## Validate everything

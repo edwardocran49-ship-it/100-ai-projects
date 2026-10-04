@@ -12,6 +12,10 @@ Predict the median value of owner-occupied homes from the Boston Housing dataset
 
 The repository includes the 506-row `HousingData.csv` downloaded from the Kaggle dataset `altavish/boston-housing-dataset`. Kaggle lists it as CC0: Public Domain. See [DATASET.md](DATASET.md) for provenance, columns, and limitations.
 
+## Analysis
+
+Read the verified findings in [ANALYSIS_REPORT.md](ANALYSIS_REPORT.md).
+
 ## Run
 
 ```powershell

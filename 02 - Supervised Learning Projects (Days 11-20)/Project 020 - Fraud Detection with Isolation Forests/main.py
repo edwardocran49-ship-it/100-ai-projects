@@ -1,55 +1,27 @@
-"""Runnable offline demonstration for Project 20: Fraud Detection with Isolation Forests.
+"""Isolation-forest fraud detection on real anonymized card transactions."""
+import pandas as pd
+from sklearn.ensemble import IsolationForest
+from sklearn.metrics import precision_score, recall_score
+from sklearn.preprocessing import StandardScaler
+from download_data import ensure_dataset
 
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
+PROJECT_TITLE = "Fraud Detection with Isolation Forests"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 20
-PROJECT_TITLE = 'Fraud Detection with Isolation Forests'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def distance(a: list[float], b: list[float]) -> float:
-    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
-
-
-def run_demo() -> dict[str, Any]:
-    rng = random.Random(SEED)
-    rows: list[tuple[list[float], int]] = []
-    for label, center in ((0, (-2.0, -1.5)), (1, (2.0, 1.5))):
-        for _ in range(50):
-            rows.append(([rng.gauss(center[0], .65), rng.gauss(center[1], .65)], label))
-    train, test = rows[:80], rows[80:]
-    centroids = []
-    for label in (0, 1):
-        points = [x for x, y in train if y == label]
-        centroids.append([sum(p[i] for p in points) / len(points) for i in range(2)])
-    predicted = [min((distance(x, c), label) for label, c in enumerate(centroids))[1] for x, _ in test]
-    accuracy = sum(int(p == y) for p, (_, y) in zip(predicted, test)) / len(test)
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok",
-            "task": "classification", "metrics": {"accuracy": round(accuracy, 4)},
-            "sample_prediction": predicted[0]}
+def run_demo():
+    df = pd.read_csv(ensure_dataset(), nrows=120000)
+    features = df.drop(columns="Class")
+    scaled = StandardScaler().fit_transform(features)
+    model = IsolationForest(n_estimators=120, contamination=float(df.Class.mean()), random_state=42, n_jobs=1).fit(scaled)
+    prediction = (model.predict(scaled) == -1).astype(int)
+    return {"project": 20, "title": PROJECT_TITLE, "author": "Edward Ocran", "status": "ok", "dataset": "Credit Card Fraud Detection", "records": len(df), "fraud_records": int(df.Class.sum()), "metrics": {"precision": round(float(precision_score(df.Class, prediction, zero_division=0)), 4), "recall": round(float(recall_score(df.Class, prediction, zero_division=0)), 4)}}
 
 def main() -> None:
+    import argparse, json
     parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
+    print(json.dumps(result, sort_keys=True) if args.json else json.dumps(result, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
     main()
