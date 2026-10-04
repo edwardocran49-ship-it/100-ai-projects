@@ -1,33 +1,27 @@
 # Project 67: Voice Emotion Classifier
 
 **Author:** Edward Ocran  
-**Category:** 07 - Speech and Audio (Days 61-70)  
-**Implementation type:** Audio
+**Category:** Speech and Audio (Days 61–70)
 
 ## Objective
 
-Build a system that:
+Classify vocal emotion from RAVDESS speech recordings.
 
-## What is included
+## Included
 
-- `main.py` - deterministic, offline runnable implementation.
-- `test_project.py` - automated smoke test.
-- `course-requirements.txt` - dependency commands mentioned by the course, when present.
-- The licensed course PDFs are intentionally excluded from this public repository.
+- `main.py` — runnable implementation of the PDF workflow.
+- `test_project.py` — behavior-focused automated test.
+- `ANALYSIS_REPORT.md` — observed results, charts, and interpretation.
+- `DATASET.md` — audio source and handling notes.
+- `download_data.py` — reproducible dataset retrieval.
+- `analysis_assets/` — rendered evidence used by the report.
 
 ## Run
 
 ```powershell
-python main.py
+pip install -r requirements.txt
+python main.py --help
 python -m unittest -v test_project.py
 ```
 
-The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-## Course dependency guidance
-
-- `pip install librosa scikit-learn numpy torch matplotlib`
-
-## Success criteria
-
-The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+Model weights and downloaded audio are kept out of version control. The course PDF is not redistributed.

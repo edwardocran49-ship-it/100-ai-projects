@@ -1,0 +1,4 @@
+pyttsx3
+numpy
+scipy
+# Optional: TTS, elevenlabs

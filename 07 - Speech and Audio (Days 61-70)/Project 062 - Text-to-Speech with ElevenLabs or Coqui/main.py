@@ -1,52 +1,34 @@
-"""Runnable offline demonstration for Project 62: Text-to-Speech with ElevenLabs or Coqui.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Create speech audio from text with an offline system voice."""
 from __future__ import annotations
+import argparse,json,os,tempfile,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.audio import wav_metrics,write_tone
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=62,"Text-to-Speech with ElevenLabs or Coqui","Edward Ocran"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
+def synthesize(text:str,output:Path,voice:str|None=None,rate:int=175,backend:str="system"):
+    if backend=="coqui":
+        from TTS.api import TTS
+        engine=TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC",progress_bar=False)
+        engine.tts_to_file(text=text,file_path=str(output));return
+    if backend=="elevenlabs":
+        from elevenlabs.client import ElevenLabs
+        client=ElevenLabs();audio=client.text_to_speech.convert(text=text,voice_id=voice or "Rachel",model_id="eleven_multilingual_v2")
+        output.write_bytes(b"".join(audio));return
+    import pyttsx3
+    engine=pyttsx3.init(); engine.setProperty("rate",rate)
+    if voice:
+        match=next((v for v in engine.getProperty("voices") if voice.lower() in v.name.lower()),None)
+        if match: engine.setProperty("voice",match.id)
+    engine.save_to_file(text,str(output));engine.runAndWait()
+    if not output.exists(): raise RuntimeError("Speech engine did not create the output file")
 
-PROJECT_NUMBER = 62
-PROJECT_TITLE = 'Text-to-Speech with ElevenLabs or Coqui'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-POSITIVE = {"clear", "excellent", "helpful", "love", "good", "fast", "accurate"}
-NEGATIVE = {"bad", "slow", "confusing", "hate", "poor", "broken", "wrong"}
-
-
-def analyze(text: str) -> dict[str, Any]:
-    tokens = re.findall(r"[a-z']+", text.lower())
-    score = sum(token in POSITIVE for token in tokens) - sum(token in NEGATIVE for token in tokens)
-    label = "positive" if score > 0 else "negative" if score < 0 else "neutral"
-    return {"label": label, "score": score, "tokens": tokens}
-
-
-def run_demo() -> dict[str, Any]:
-    samples = ["The model is clear, helpful and accurate", "The result is slow and confusing", "The model returned a result"]
-    results = [analyze(sample) for sample in samples]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "nlp",
-            "metrics": {"documents": len(results), "non_neutral": sum(r["label"] != "neutral" for r in results)},
-            "sample_prediction": results[0]}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def run_demo(fast:bool|None=None,text="Clear narration makes written information accessible.",output:Path|None=None,backend="system"):
+    fast=os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" if fast is None else fast
+    output=output or Path(tempfile.gettempdir())/"project62_narration.wav"
+    if fast: write_tone(output,220,.8)
+    else: synthesize(text,output,backend=backend)
+    return {"project":62,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","backend":backend,"output":str(output),"text":text,"metrics":wav_metrics(output)}
+def main():
+    p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("text",nargs="?",default="Clear narration makes written information accessible.");p.add_argument("--backend",choices=["system","coqui","elevenlabs"],default="system");p.add_argument("--output",type=Path,default=Path("narration.wav"));p.add_argument("--json",action="store_true");a=p.parse_args();r=run_demo(text=a.text,output=a.output,backend=a.backend);print(json.dumps(r,indent=None if a.json else 2))
+if __name__=="__main__":main()

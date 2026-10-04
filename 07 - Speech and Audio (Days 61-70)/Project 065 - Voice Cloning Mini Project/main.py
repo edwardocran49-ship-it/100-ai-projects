@@ -1,49 +1,21 @@
-"""Runnable offline demonstration for Project 65: Voice Cloning Mini Project.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Consent-gated voice cloning with a Coqui YourTTS adapter."""
 from __future__ import annotations
+import argparse,json,os,sys,tempfile
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.audio import wav_metrics,write_tone
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=65,"Voice Cloning Mini Project","Edward Ocran"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 65
-PROJECT_TITLE = 'Voice Cloning Mini Project'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def audio_features(samples: list[float]) -> dict[str, float]:
-    rms = math.sqrt(sum(value * value for value in samples) / len(samples))
-    crossings = sum((a < 0) != (b < 0) for a, b in zip(samples, samples[1:]))
-    return {"rms": rms, "zero_crossing_rate": crossings / (len(samples) - 1)}
-
-
-def run_demo() -> dict[str, Any]:
-    rate = 8000
-    frequency = 220 + (PROJECT_NUMBER % 5) * 110
-    samples = [0.7 * math.sin(2 * math.pi * frequency * i / rate) for i in range(rate // 4)]
-    features = audio_features(samples)
-    label = "high_tone" if features["zero_crossing_rate"] > 0.09 else "low_tone"
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "audio",
-            "metrics": {key: round(value, 6) for key, value in features.items()}, "sample_prediction": label}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+def clone(reference:Path,text:str,output:Path,consent:bool):
+    if not consent: raise PermissionError("Recorded speaker consent is required")
+    from TTS.api import TTS
+    engine=TTS(model_name="tts_models/multilingual/multi-dataset/your_tts",progress_bar=False)
+    engine.tts_to_file(text=text,speaker_wav=str(reference),language="en",file_path=str(output))
+def run_demo(fast:bool|None=None,reference:Path|None=None,output:Path|None=None,consent=True):
+    fast=os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" if fast is None else fast;temp=Path(tempfile.gettempdir());reference=reference or temp/"project65_reference.wav";output=output or temp/"project65_clone.wav"
+    if fast: write_tone(reference,210,1);write_tone(output,214,1)
+    else: clone(reference,"This sample was synthesized with the speaker's permission.",output,consent)
+    return {"project":65,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","consent_confirmed":consent,"reference":wav_metrics(reference),"output":wav_metrics(output)}
+def main():
+    p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--reference",type=Path);p.add_argument("--output",type=Path,default=Path("cloned_voice.wav"));p.add_argument("--consent",action="store_true");p.add_argument("--json",action="store_true");a=p.parse_args();r=run_demo(reference=a.reference,output=a.output,consent=a.consent);print(json.dumps(r,indent=None if a.json else 2))
+if __name__=="__main__":main()

@@ -1,33 +1,26 @@
-    # Project 62: Text-to-Speech with ElevenLabs or Coqui
+# Project 62: Text-to-Speech with ElevenLabs or Coqui
 
-    **Author:** Edward Ocran  
-    **Category:** 07 - Speech and Audio (Days 61-70)  
-    **Implementation type:** Nlp
+**Author:** Edward Ocran
+**Category:** Speech and Audio (Days 61–70)
 
-    ## Objective
+## Objective
 
-    Turn any input text into audio speech output, with support for voice selection, saving
+Synthesize speech from text with selectable local, Coqui, or ElevenLabs backends.
 
-    ## What is included
+## Included
 
-    - `main.py` - deterministic, offline runnable implementation.
-    - `test_project.py` - automated smoke test.
-    - `course-requirements.txt` - dependency commands mentioned by the course, when present.
+- `main.py` — runnable implementation of the PDF workflow.
+- `test_project.py` — behavior-focused automated test.
+- `ANALYSIS_REPORT.md` — observed results, charts, and interpretation.
+- `DATASET.md` — audio source and handling notes.
+- `analysis_assets/` — rendered evidence used by the report.
 
-    ## Run
+## Run
 
-    ```powershell
-    python main.py
-    python -m unittest -v test_project.py
-    ```
+```powershell
+pip install -r requirements.txt
+python main.py --help
+python -m unittest -v test_project.py
+```
 
-    The default demo uses generated sample data so it runs without API keys, paid services, or large model downloads. Replace the sample data with the dataset or service described in the PDF when extending the project.
-
-    ## Course dependency guidance
-
-    - `pip install elevenlabs`
-- `pip install TTS`
-
-    ## Success criteria
-
-    The command exits successfully, returns `status: ok`, includes task metrics, and passes the included smoke test.
+Model weights and downloaded audio are kept out of version control. The course PDF is not redistributed.

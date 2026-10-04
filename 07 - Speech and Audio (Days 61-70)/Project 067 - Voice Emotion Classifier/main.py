@@ -1,49 +1,29 @@
-"""Runnable offline demonstration for Project 67: Voice Emotion Classifier.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Train a voice-emotion classifier on the RAVDESS speech dataset."""
 from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 67
-PROJECT_TITLE = 'Voice Emotion Classifier'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def audio_features(samples: list[float]) -> dict[str, float]:
-    rms = math.sqrt(sum(value * value for value in samples) / len(samples))
-    crossings = sum((a < 0) != (b < 0) for a, b in zip(samples, samples[1:]))
-    return {"rms": rms, "zero_crossing_rate": crossings / (len(samples) - 1)}
-
-
-def run_demo() -> dict[str, Any]:
-    rate = 8000
-    frequency = 220 + (PROJECT_NUMBER % 5) * 110
-    samples = [0.7 * math.sin(2 * math.pi * frequency * i / rate) for i in range(rate // 4)]
-    features = audio_features(samples)
-    label = "high_tone" if features["zero_crossing_rate"] > 0.09 else "low_tone"
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "audio",
-            "metrics": {key: round(value, 6) for key, value in features.items()}, "sample_prediction": label}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+import argparse,json,os,sys
+from collections import Counter
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.audio import classify_dataset,write_tone
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=67,"Voice Emotion Classifier","Edward Ocran"
+MAP={"01":"neutral","02":"calm","03":"happy","04":"sad","05":"angry","06":"fearful","07":"disgust","08":"surprised"}
+def load_ravdess(root:Path,limit=24):
+    selected=[];counts=Counter()
+    for path in sorted(root.rglob("*.wav")):
+        parts=path.stem.split("-");label=MAP.get(parts[2]) if len(parts)>=3 else None
+        if label and counts[label]<limit: selected.append(path);counts[label]+=1
+    return selected,[MAP[p.stem.split("-")[2]] for p in selected]
+def run_demo(fast:bool|None=None,data:Path|None=None):
+    fast=os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" if fast is None else fast
+    if fast:
+        d=Path(__file__).parent/".validation_audio";d.mkdir(exist_ok=True);files=[];labels=[]
+        for label,freq in (("calm",180),("angry",680)):
+            for i in range(8):files.append(write_tone(d/f"{label}{i}.wav",freq+i*4));labels.append(label)
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+        if data is None: raise ValueError("Provide --data with the RAVDESS directory")
+        files,labels=load_ravdess(data)
+    result=classify_dataset(files,labels,67)
+    return {"project":67,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","dataset":"RAVDESS","metrics":{k:v for k,v in result.items() if k not in {"model","truth","predictions","confusion_matrix"}},"confusion_matrix":result["confusion_matrix"]}
+def main():
+    p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--data",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();r=run_demo(data=a.data);print(json.dumps(r,indent=None if a.json else 2))
+if __name__=="__main__":main()

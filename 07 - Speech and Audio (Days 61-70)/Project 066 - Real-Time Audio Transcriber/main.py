@@ -1,49 +1,18 @@
-"""Runnable offline demonstration for Project 66: Real-Time Audio Transcriber.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Transcribe microphone audio continuously until the user says stop."""
 from __future__ import annotations
+import argparse,json,os,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.speech import stream_transcribe_vosk
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=66,"Real-Time Audio Transcriber","Edward Ocran"
 
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 66
-PROJECT_TITLE = 'Real-Time Audio Transcriber'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def audio_features(samples: list[float]) -> dict[str, float]:
-    rms = math.sqrt(sum(value * value for value in samples) / len(samples))
-    crossings = sum((a < 0) != (b < 0) for a, b in zip(samples, samples[1:]))
-    return {"rms": rms, "zero_crossing_rate": crossings / (len(samples) - 1)}
-
-
-def run_demo() -> dict[str, Any]:
-    rate = 8000
-    frequency = 220 + (PROJECT_NUMBER % 5) * 110
-    samples = [0.7 * math.sin(2 * math.pi * frequency * i / rate) for i in range(rate // 4)]
-    features = audio_features(samples)
-    label = "high_tone" if features["zero_crossing_rate"] > 0.09 else "low_tone"
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "audio",
-            "metrics": {key: round(value, 6) for key, value in features.items()}, "sample_prediction": label}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
+def run_demo(fast:bool|None=None,audio:Path|None=None,model:Path|None=None):
+    fast=os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" if fast is None else fast
+    if fast:segments=["Live captions make meetings easier to follow","Please stop the transcription"]
     else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+        if audio is None:raise ValueError("Provide --audio with a WAV recording")
+        segments=stream_transcribe_vosk(audio,model or ROOT/".models"/"vosk-model-small-en-us-0.15")
+    return {"project":66,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","segments":segments,"transcript":" ".join(segments),"metrics":{"segments":len(segments),"words":sum(len(x.split()) for x in segments),"stop_detected":"stop" in segments[-1].lower()}}
+def main():
+    p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--audio",type=Path);p.add_argument("--model",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();r=run_demo(audio=a.audio,model=a.model);print(json.dumps(r,indent=None if a.json else 2))
+if __name__=="__main__":main()

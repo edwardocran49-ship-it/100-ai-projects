@@ -1,60 +1,18 @@
-"""Runnable offline demonstration for Project 69: Whisper + RAG Agent.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
+"""Transcribe a spoken question, retrieve evidence, and answer from context."""
 from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 69
-PROJECT_TITLE = 'Whisper + RAG Agent'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-KNOWLEDGE = {
-    "memory": "Memory stores useful context between agent steps.",
-    "tool": "Tools let an agent perform bounded, auditable actions.",
-    "safety": "Validate inputs and keep a human in control of consequential actions.",
-}
-
-
-def safe_calculate(expression: str) -> float:
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", expression):
-        raise ValueError("Only arithmetic expressions are allowed")
-    return float(eval(expression, {"__builtins__": {}}, {}))
-
-
-def agent(query: str) -> dict[str, Any]:
-    arithmetic = re.search(r"(?:calculate|compute)\s+(.+)", query.lower())
-    if arithmetic:
-        return {"tool": "calculator", "answer": safe_calculate(arithmetic.group(1))}
-    key = max(KNOWLEDGE, key=lambda item: int(item in query.lower()))
-    return {"tool": "local_knowledge", "answer": KNOWLEDGE[key]}
-
-
-def run_demo() -> dict[str, Any]:
-    results = [agent("calculate 12 * (3 + 2)"), agent("How should tool safety work?")]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "agent",
-            "metrics": {"tool_calls": len(results)}, "sample_prediction": results}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+import argparse,json,os,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.agents import VectorMemory,summarize_text
+from portfolio_core.speech import transcribe_vosk
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=69,"Whisper + RAG Agent","Edward Ocran"
+DOCS=["Python was created by Guido van Rossum and first released in 1991.","Whisper is a multilingual automatic speech recognition model.","Paris is the capital and largest city of France."]
+def run_demo(fast:bool|None=None,audio:Path|None=None,model:Path|None=None):
+    fast=os.getenv("PORTFOLIO_FAST_VALIDATION")=="1" if fast is None else fast
+    question="Who created Python?" if fast else transcribe_vosk(audio,model or ROOT/".models"/"vosk-model-small-en-us-0.15")
+    memory=VectorMemory();[memory.memorize(doc,f"document-{i}",300) for i,doc in enumerate(DOCS,1)];passages=memory.query(question,2)
+    answer=summarize_text(passages[0]["text"],1)
+    return {"project":69,"title":PROJECT_TITLE,"author":AUTHOR,"status":"ok","transcript":question,"answer":answer,"passages":passages,"metrics":{"documents":3,"retrieved":2,"best_similarity":passages[0]["score"]}}
+def main():
+    p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--audio",type=Path);p.add_argument("--model",type=Path);p.add_argument("--json",action="store_true");a=p.parse_args();r=run_demo(audio=a.audio,model=a.model);print(json.dumps(r,indent=None if a.json else 2))
+if __name__=="__main__":main()

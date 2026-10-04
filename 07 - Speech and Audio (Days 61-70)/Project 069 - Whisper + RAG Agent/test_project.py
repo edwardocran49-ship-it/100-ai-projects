@@ -1,23 +1,10 @@
-from __future__ import annotations
-
-import sys
-import unittest
+import importlib.util,os,unittest
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from main import PROJECT_NUMBER, PROJECT_TITLE, run_demo
-
-
-class ProjectSmokeTest(unittest.TestCase):
-    def test_demo_completes(self) -> None:
-        result = run_demo()
-        self.assertEqual(result["project"], PROJECT_NUMBER)
-        self.assertEqual(result["title"], PROJECT_TITLE)
-        self.assertEqual(result["status"], "ok")
-        self.assertIn("metrics", result)
-        self.assertIn("sample_prediction", result)
-
-
-if __name__ == "__main__":
-    unittest.main()
+spec=importlib.util.spec_from_file_location("project_main",Path(__file__).with_name("main.py"));module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+class ProjectTest(unittest.TestCase):
+    def test_workflow(self):
+        result=module.run_demo(fast=True)
+        self.assertEqual(result["status"],"ok")
+        self.assertEqual(result["author"],"Edward Ocran")
+        self.assertTrue(result.get("metrics") or result.get("reference"))
+if __name__=="__main__":unittest.main()

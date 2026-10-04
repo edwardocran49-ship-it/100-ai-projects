@@ -1,0 +1,4 @@
+vosk
+numpy
+scipy
+scikit-learn
