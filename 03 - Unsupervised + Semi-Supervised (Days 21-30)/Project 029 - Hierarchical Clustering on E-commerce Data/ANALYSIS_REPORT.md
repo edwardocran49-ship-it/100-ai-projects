@@ -1,4 +1,4 @@
-# Hierarchical Clustering on E-commerce Data: an evidence-led assessment
+# Hierarchical Clustering on E-commerce Data — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 29  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - Five customer clusters achieve a 0.6642 silhouette score among the top 2,000 customers by spend, indicating strong separation within that selected population.
-- **Senior analyst's read:** The high score is encouraging, but the top-spender filter shapes the geometry and excludes the long tail. The clusters describe high-value customer behavior—spend, frequency, basket size, and recency—not the full customer base.
-- **Decision:** Profile cluster economics and repeat the analysis on the complete customer population before activation.
+- The high score is encouraging, but the top-spender filter shapes the geometry and excludes the long tail. The clusters describe high-value customer behavior—spend, frequency, basket size, and recency—not the full customer base.
+- **Recommended action:** Profile cluster economics and repeat the analysis on the complete customer population before activation.
 
 ## Analytical Question
 
@@ -34,11 +34,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -46,13 +46,9 @@ Five customer clusters achieve a 0.6642 silhouette score among the top 2,000 cus
 
 The high score is encouraging, but the top-spender filter shapes the geometry and excludes the long tail. The clusters describe high-value customer behavior—spend, frequency, basket size, and recency—not the full customer base.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

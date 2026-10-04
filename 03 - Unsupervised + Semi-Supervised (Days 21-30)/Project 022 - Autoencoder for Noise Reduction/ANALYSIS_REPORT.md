@@ -1,4 +1,4 @@
-# Autoencoder for Noise Reduction: an evidence-led assessment
+# Autoencoder for Noise Reduction — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 22  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - The linear autoencoder reduces reconstruction MSE from 0.06232 to 0.03263, removing 47.64% of injected-noise error.
-- **Senior analyst's read:** The reduction is material: nearly half of the corruption is removed using a compact 48-component representation. The remaining error reflects both unrecovered detail and the linear model’s tendency to smooth fine strokes.
-- **Decision:** Preserve this benchmark and compare with a nonlinear convolutional autoencoder using the same corruption process.
+- The reduction is material: nearly half of the corruption is removed using a compact 48-component representation. The remaining error reflects both unrecovered detail and the linear model’s tendency to smooth fine strokes.
+- **Recommended action:** Preserve this benchmark and compare with a nonlinear convolutional autoencoder using the same corruption process.
 
 ## Analytical Question
 
@@ -34,11 +34,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -46,13 +46,9 @@ The linear autoencoder reduces reconstruction MSE from 0.06232 to 0.03263, remov
 
 The reduction is material: nearly half of the corruption is removed using a compact 48-component representation. The remaining error reflects both unrecovered detail and the linear model’s tendency to smooth fine strokes.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

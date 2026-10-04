@@ -1,4 +1,4 @@
-# PCA for Dimensionality Reduction: an evidence-led assessment
+# PCA for Dimensionality Reduction — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 8  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - A two-component map retains only 21.59% of standardized variance, so it is a visualization—not a faithful replacement for the 64-pixel feature space.
-- **Senior analyst's read:** The compression is intentionally severe: 62 dimensions are removed. Any apparent class overlap in the chart may be a projection artifact, while apparent separation does not prove a two-dimensional classifier will preserve full-space performance.
-- **Decision:** Use the projection for exploration and measure downstream accuracy across a component-count curve.
+- The compression is intentionally severe: 62 dimensions are removed. Any apparent class overlap in the chart may be a projection artifact, while apparent separation does not prove a two-dimensional classifier will preserve full-space performance.
+- **Recommended action:** Use the projection for exploration and measure downstream accuracy across a component-count curve.
 
 ## Analytical Question
 
@@ -35,11 +35,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -47,13 +47,9 @@ A two-component map retains only 21.59% of standardized variance, so it is a vis
 
 The compression is intentionally severe: 62 dimensions are removed. Any apparent class overlap in the chart may be a projection artifact, while apparent separation does not prove a two-dimensional classifier will preserve full-space performance.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

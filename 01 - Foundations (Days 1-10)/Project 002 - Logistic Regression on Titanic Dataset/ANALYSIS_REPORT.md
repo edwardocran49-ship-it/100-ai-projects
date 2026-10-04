@@ -1,4 +1,4 @@
-# Logistic Regression on Titanic Dataset: an evidence-led assessment
+# Logistic Regression on Titanic Dataset — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 2  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - The logistic model reaches 74.81% accuracy, about 13 percentage points above a majority-class rule.
-- **Senior analyst's read:** The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
-- **Decision:** Retain the model as a transparent baseline and evaluate class-level errors before comparing more complex estimators.
+- The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
+- **Recommended action:** Retain the model as a transparent baseline and evaluate class-level errors before comparing more complex estimators.
 
 ## Analytical Question
 
@@ -33,11 +33,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -45,13 +45,9 @@ The logistic model reaches 74.81% accuracy, about 13 percentage points above a m
 
 The lift over the majority baseline confirms that the passenger features contain real predictive structure. The useful next question is not whether the model beats chance, but whether survivor recall and false-negative patterns remain acceptable across passenger groups.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

@@ -1,4 +1,4 @@
-# Predict House Prices (Boston Housing Dataset): an evidence-led assessment
+# Predict House Prices (Boston Housing Dataset) — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 1  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - Average room count carries a clear price signal, but a one-variable model still misses by about $4.1k on an average holdout property.
-- **Senior analyst's read:** The slope is economically meaningful: an additional room is associated with about $9.1k in median value. The remaining error shows that room count explains only one part of the pricing structure; location, condition, tax, and neighborhood variables still carry material information.
-- **Decision:** Use this as an interpretable benchmark, not as a valuation engine.
+- The slope is economically meaningful: an additional room is associated with about $9.1k in median value. The remaining error shows that room count explains only one part of the pricing structure; location, condition, tax, and neighborhood variables still carry material information.
+- **Recommended action:** Use this as an interpretable benchmark, not as a valuation engine.
 
 ## Analytical Question
 
@@ -34,11 +34,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -46,13 +46,9 @@ Average room count carries a clear price signal, but a one-variable model still 
 
 The slope is economically meaningful: an additional room is associated with about $9.1k in median value. The remaining error shows that room count explains only one part of the pricing structure; location, condition, tax, and neighborhood variables still carry material information.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

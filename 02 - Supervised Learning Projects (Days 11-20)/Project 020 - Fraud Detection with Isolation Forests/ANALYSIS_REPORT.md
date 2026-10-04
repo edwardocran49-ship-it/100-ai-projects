@@ -1,4 +1,4 @@
-# Fraud Detection with Isolation Forests: an evidence-led assessment
+# Fraud Detection with Isolation Forests — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 20  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - The detector captures 35.22% of fraud and 35.22% of its alerts are true fraud—far above the 0.206% base rate, but incomplete for stand-alone decisions.
-- **Senior analyst's read:** Precision is roughly 171 times the raw fraud rate, so anomaly scoring creates genuine investigative lift. The operating issue is coverage: almost two thirds of fraud remains unflagged, while almost two thirds of alerts still require review and turn out not to be fraud.
-- **Decision:** Use the score for triage, then tune alert volume against investigator capacity on a chronological holdout.
+- Precision is roughly 171 times the raw fraud rate, so anomaly scoring creates genuine investigative lift. The operating issue is coverage: almost two thirds of fraud remains unflagged, while almost two thirds of alerts still require review and turn out not to be fraud.
+- **Recommended action:** Use the score for triage, then tune alert volume against investigator capacity on a chronological holdout.
 
 ## Analytical Question
 
@@ -35,11 +35,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -47,13 +47,9 @@ The detector captures 35.22% of fraud and 35.22% of its alerts are true fraud—
 
 Precision is roughly 171 times the raw fraud rate, so anomaly scoring creates genuine investigative lift. The operating issue is coverage: almost two thirds of fraud remains unflagged, while almost two thirds of alerts still require review and turn out not to be fraud.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

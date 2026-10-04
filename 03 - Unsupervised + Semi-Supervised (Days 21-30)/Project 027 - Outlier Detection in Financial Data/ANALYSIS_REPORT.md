@@ -1,4 +1,4 @@
-# Outlier Detection in Financial Data: an evidence-led assessment
+# Outlier Detection in Financial Data — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 27  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - The outlier detector reaches 30.03% precision and recall across 150k transactions—about 154 times the approximate fraud base rate.
-- **Senior analyst's read:** The ranking is useful for investigation, but the symmetric precision and recall reflects setting contamination near prevalence rather than an optimized operating point. A production queue should be sized by review capacity and expected loss, not by the observed label rate.
-- **Decision:** Evaluate a chronological holdout and choose the alert threshold from cost and capacity constraints.
+- The ranking is useful for investigation, but the symmetric precision and recall reflects setting contamination near prevalence rather than an optimized operating point. A production queue should be sized by review capacity and expected loss, not by the observed label rate.
+- **Recommended action:** Evaluate a chronological holdout and choose the alert threshold from cost and capacity constraints.
 
 ## Analytical Question
 
@@ -35,11 +35,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -47,13 +47,9 @@ The outlier detector reaches 30.03% precision and recall across 150k transaction
 
 The ranking is useful for investigation, but the symmetric precision and recall reflects setting contamination near prevalence rather than an optimized operating point. A production queue should be sized by review capacity and expected loss, not by the observed label rate.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 

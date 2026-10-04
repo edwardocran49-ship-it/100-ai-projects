@@ -1,4 +1,4 @@
-# Predict Stock Prices with LSTM: an evidence-led assessment
+# Predict Stock Prices with LSTM — Analysis Report
 
 **Author:** Edward Ocran  
 **Project:** 11  
@@ -7,8 +7,8 @@
 ## Executive Summary
 
 - The sequence model misses the next adjusted close by $4.73 on average across the chronological holdout.
-- **Senior analyst's read:** The dollar error is interpretable but incomplete without a same-period naive forecast. Equity prices are highly persistent, so a complex sequence representation must beat “tomorrow equals today” and survive walk-forward evaluation to demonstrate incremental signal.
-- **Decision:** Add naive and moving-average benchmarks before making any claim of forecasting advantage.
+- The dollar error is interpretable but incomplete without a same-period naive forecast. Equity prices are highly persistent, so a complex sequence representation must beat “tomorrow equals today” and survive walk-forward evaluation to demonstrate incremental signal.
+- **Recommended action:** Add naive and moving-average benchmarks before making any claim of forecasting advantage.
 
 ## Analytical Question
 
@@ -33,11 +33,11 @@ The reported figures come from the project’s reproducible run. The interpretat
 
 ![Verified model performance](analysis/performance.png)
 
-The first chart isolates the primary evaluation result so it is not diluted by unrelated metrics. It should be read using the unit shown on the axis; rates are displayed on a common percentage scale, while errors remain in their original business or measurement unit.
+This view shows the primary evaluation result in its original unit. Percentage measures share a common scale; prediction errors remain in their business or measurement unit.
 
 ![Benchmark and analytical context](analysis/context.png)
 
-The second chart provides the comparison or experimental context that materially changes the interpretation. It is not a decorative project-count graphic: it shows the baseline, retained information, class balance, error reduction, or evaluation scale needed to understand the result.
+This comparison supplies the benchmark, class balance, retained information, error reduction, or experimental scale needed to interpret the headline result.
 
 ## What the Evidence Says
 
@@ -45,13 +45,9 @@ The sequence model misses the next adjusted close by $4.73 on average across the
 
 The dollar error is interpretable but incomplete without a same-period naive forecast. Equity prices are highly persistent, so a complex sequence representation must beat “tomorrow equals today” and survive walk-forward evaluation to demonstrate incremental signal.
 
-The strongest conclusion is therefore bounded: the project demonstrates measurable signal under its stated design, but the result should only be extended to new populations or operating conditions after the recommended validation is completed.
-
 ## Risks and Limitations
 
 The available evaluation is a project benchmark and should be validated on a separate operating sample before deployment.
-
-These limitations do not erase the result. They define where the evidence is reliable and where a decision-maker would still be taking unmeasured risk.
 
 ## Recommendations
 
