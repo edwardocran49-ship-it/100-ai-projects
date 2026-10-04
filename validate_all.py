@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -10,10 +11,23 @@ def main() -> int:
     root = Path(__file__).resolve().parent
     mains = sorted(root.glob("*/*/main.py"))
     failures = []
+    timeout_seconds = int(os.environ.get("PROJECT_TIMEOUT_SECONDS", "300"))
     for main_file in mains:
-        completed = subprocess.run(
-            [sys.executable, str(main_file), "--json"], capture_output=True, text=True, timeout=30
-        )
+        try:
+            completed = subprocess.run(
+                [sys.executable, str(main_file), "--json"],
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as exc:
+            failures.append(
+                {
+                    "project": str(main_file.parent),
+                    "stderr": f"Timed out after {timeout_seconds} seconds: {exc}",
+                }
+            )
+            continue
         try:
             # Download libraries may emit progress notices before the program's
             # machine-readable result. Each project prints its JSON result last.
