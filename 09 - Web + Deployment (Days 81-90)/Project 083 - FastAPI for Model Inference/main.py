@@ -1,48 +1,10 @@
-"""Runnable offline demonstration for Project 83: FastAPI for Model Inference.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 83
-PROJECT_TITLE = 'FastAPI for Model Inference'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def predict(payload: dict[str, Any]) -> dict[str, Any]:
-    text = str(payload.get("text", "")).strip()
-    if not text:
-        return {"ok": False, "error": "text is required"}
-    tokens = re.findall(r"[A-Za-z0-9']+", text)
-    return {"ok": True, "prediction": "long" if len(tokens) >= 6 else "short", "token_count": len(tokens)}
-
-
-def run_demo() -> dict[str, Any]:
-    response = predict({"text": "A local inference endpoint with validated input"})
-    assert response["ok"]
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "deployment",
-            "metrics": {"requests": 1, "token_count": response["token_count"]}, "sample_prediction": response}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+"""Runnable core for Project 83: FastAPI for Model Inference."""
+import argparse,json,os,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.deployment import run_project
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=83,'FastAPI for Model Inference',"Edward Ocran"
+def run_demo(fast=None):return {"title":PROJECT_TITLE,**run_project(PROJECT_NUMBER,Path(__file__).parent,True if fast is None else fast)}
+def main():
+ p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(),indent=None if a.json else 2))
+if __name__=="__main__":main()

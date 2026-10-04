@@ -1,49 +1,10 @@
-"""Runnable offline demonstration for Project 86: Voice-Enabled AI Web Assistant.
-
-Author: Edward Ocran
-This implementation follows the supplied project objective while using generated
-sample data so that its smoke test is deterministic and does not require secrets.
-"""
-from __future__ import annotations
-
-import argparse
-import json
-import math
-import random
-import re
-from typing import Any
-
-PROJECT_NUMBER = 86
-PROJECT_TITLE = 'Voice-Enabled AI Web Assistant'
-AUTHOR = "Edward Ocran"
-SEED = 1000 + PROJECT_NUMBER
-
-def audio_features(samples: list[float]) -> dict[str, float]:
-    rms = math.sqrt(sum(value * value for value in samples) / len(samples))
-    crossings = sum((a < 0) != (b < 0) for a, b in zip(samples, samples[1:]))
-    return {"rms": rms, "zero_crossing_rate": crossings / (len(samples) - 1)}
-
-
-def run_demo() -> dict[str, Any]:
-    rate = 8000
-    frequency = 220 + (PROJECT_NUMBER % 5) * 110
-    samples = [0.7 * math.sin(2 * math.pi * frequency * i / rate) for i in range(rate // 4)]
-    features = audio_features(samples)
-    label = "high_tone" if features["zero_crossing_rate"] > 0.09 else "low_tone"
-    return {"project": PROJECT_NUMBER, "title": PROJECT_TITLE, "status": "ok", "task": "audio",
-            "metrics": {key: round(value, 6) for key, value in features.items()}, "sample_prediction": label}
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=PROJECT_TITLE)
-    parser.add_argument("--json", action="store_true", help="print machine-readable output")
-    args = parser.parse_args()
-    result = run_demo()
-    if args.json:
-        print(json.dumps(result, sort_keys=True))
-    else:
-        print(f"Project {PROJECT_NUMBER}: {PROJECT_TITLE}")
-        print(json.dumps(result, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
+"""Runnable core for Project 86: Voice-Enabled AI Web Assistant."""
+import argparse,json,os,sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from portfolio_core.deployment import run_project
+PROJECT_NUMBER,PROJECT_TITLE,AUTHOR=86,'Voice-Enabled AI Web Assistant',"Edward Ocran"
+def run_demo(fast=None):return {"title":PROJECT_TITLE,**run_project(PROJECT_NUMBER,Path(__file__).parent,True if fast is None else fast)}
+def main():
+ p=argparse.ArgumentParser(description=PROJECT_TITLE);p.add_argument("--json",action="store_true");a=p.parse_args();print(json.dumps(run_demo(),indent=None if a.json else 2))
+if __name__=="__main__":main()
